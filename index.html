@@ -1,0 +1,898 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reels que Viralizam com IA</title>
+<meta name="description" content="Faça a sua conta crescer com vídeos animados e narrados feitos por IA, sem aparecer e sem editar. O método de uma conta que passou de 20 mil seguidores na primeira semana. Ebook, aulas, modelo de cena e kit para o Claude.">
+<meta property="og:title" content="Reels que Viralizam com IA">
+<meta property="og:description" content="Faça a sua conta crescer com vídeos feitos por IA. Você escreve; a IA desenha, narra e monta. Sem aparecer e sem editar.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<script>
+  // liga as entradas animadas só para quem aceita movimento; sem script, tudo aparece parado
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('anima');
+  addEventListener('error', () => document.documentElement.classList.remove('anima'));
+</script>
+<style>
+  :root {
+    --papel: #efe6d0; --papel-claro: #fbf7ec; --tinta: #1c1a17; --vermelho: #c2311e; --ouro: #e3a512; --verde: #1e6b43;
+    --manchete: 'Anton', Impact, 'Arial Narrow', sans-serif;
+    --texto: 'Libre Caslon Text', Georgia, 'Times New Roman', serif;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scrollbar-color: var(--tinta) var(--papel); }
+  ::selection { background: var(--ouro); color: var(--tinta); }
+  body {
+    margin: 0; background-color: var(--papel); color: var(--tinta); font: 18px/1.6 var(--texto);
+    background-image: radial-gradient(rgba(28, 26, 23, .1) 1px, transparent 1.4px); background-size: 18px 18px;
+    overflow-x: hidden;
+  }
+  a { color: inherit; text-underline-offset: .18em; }
+  :focus-visible { outline: 3px solid var(--vermelho); outline-offset: 3px; }
+  .faixa { max-width: 1100px; margin: 0 auto; padding: 0 22px; }
+  section { padding: 72px 0; border-top: 3px solid var(--tinta); }
+  h1, h2, h3 { font-family: var(--manchete); font-weight: 400; text-transform: uppercase; line-height: 1.15; margin: 0; letter-spacing: .5px; text-wrap: balance; }
+  h1 { font-size: clamp(46px, 7.2vw, 88px); line-height: 1.1; }
+  h1 .lin, h2 .lin { display: block; }
+  h2 { font-size: clamp(34px, 5.4vw, 60px); margin-bottom: 22px; }
+  h3 { font-size: 26px; margin-bottom: 8px; }
+  p { margin: 0 0 16px; text-wrap: pretty; }
+  .vermelho { color: var(--vermelho); }
+  .marca-texto { background: linear-gradient(var(--ouro), var(--ouro)) no-repeat 0 86% / var(--varre, 100%) 40%; }
+  .grande { font-size: 21px; max-width: 36em; }
+
+  /* entradas: o script anima e depois solta o elemento */
+  html.anima [data-mov]:not([data-feito]) { opacity: 0; }
+  [data-mov] { will-change: transform, opacity; }
+
+  /* faixa da Black, discreta */
+  .black { display: block; background: var(--tinta); color: var(--papel-claro); text-align: center; font-size: 14px; letter-spacing: .02em; padding: 7px 12px; text-decoration: none; }
+  .black:hover b { text-decoration: underline; }
+  .black b { color: var(--ouro); font-variant-numeric: tabular-nums; }
+
+  /* cabeçalho de jornal */
+  .topo { border-bottom: 3px solid var(--tinta); padding: 12px 0; font-size: 14px; letter-spacing: .08em; text-transform: uppercase; }
+  .topo .faixa { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .topo b { font-family: var(--manchete); font-weight: 400; font-size: 18px; letter-spacing: 1px; }
+
+  .abre { padding: 52px 0 0; border-top: 0; }
+  .abre .faixa { display: grid; grid-template-columns: 1.4fr .6fr; gap: 44px; align-items: center; padding-bottom: 64px; }
+  .abre .grande { margin-top: 24px; }
+  .vitrine { justify-self: center; width: min(100%, 330px); margin: 0; }
+  .vitrine figcaption { margin-top: 28px; text-align: center; font-size: 14px; line-height: 1.4; }
+  .video { position: relative; aspect-ratio: 9 / 16; border: 4px solid var(--tinta); background: var(--tinta); box-shadow: 10px 10px 0 var(--tinta); transform: rotate(1.2deg); }
+  .video iframe { width: 100%; height: 100%; display: block; border: 0; pointer-events: none; }
+  .video button { position: absolute; left: 10px; bottom: 10px; font: 700 14px var(--texto); background: var(--papel-claro); color: var(--tinta); border: 3px solid var(--tinta); padding: 6px 12px; cursor: pointer; }
+  .video button:active { transform: translate(1px, 1px); }
+  .video .trofeu { position: absolute; right: -22px; top: -30px; background: var(--ouro); color: var(--tinta); font: 700 13px/1.25 var(--texto); padding: 8px 12px 7px; border: 3px solid var(--tinta); box-shadow: 4px 4px 0 var(--tinta); transform: rotate(4deg); text-align: center; }
+  .video .trofeu b { display: block; font: 400 30px/1 var(--manchete); letter-spacing: .5px; text-transform: uppercase; }
+
+  .botao { display: inline-block; font-family: var(--manchete); font-size: 26px; letter-spacing: 1px; text-transform: uppercase; text-decoration: none; background: var(--vermelho); color: var(--papel-claro); padding: 14px 30px 12px; border: 3px solid var(--tinta); --sombra: var(--tinta); box-shadow: 6px 6px 0 var(--sombra); transition: transform .12s, box-shadow .12s; }
+  .botao:hover { transform: translate(2px, 2px); box-shadow: 4px 4px 0 var(--sombra); }
+  .botao:active { transform: translate(6px, 6px); box-shadow: 0 0 0 var(--sombra); }
+  .fecho .botao, .plano.forte .botao, .kit .botao { --sombra: var(--papel-claro); border-color: var(--papel-claro); }
+  .botao.claro { background: var(--papel-claro); color: var(--tinta); }
+  .chamada { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; margin-top: 26px; }
+  .chamada span { font-size: 15px; }
+  /* tarja preta que fecha a abertura */
+  .selos { display: flex; justify-content: center; gap: 6px 40px; flex-wrap: wrap; margin: 0; padding: 15px 22px 12px; list-style: none; background: var(--tinta); color: var(--papel-claro); font-family: var(--manchete); font-size: clamp(18px, 2.2vw, 24px); letter-spacing: 1px; text-transform: uppercase; line-height: 1.2; }
+  .selos li::before { content: ''; display: inline-block; width: .5em; height: .5em; background: var(--ouro); margin-right: .55em; transform: rotate(45deg) translateY(-.12em); }
+
+  /* prova: as três aberturas */
+  .placar { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 18px; margin: 24px 0 0; align-items: end; }
+  .placar > div { background: var(--papel-claro); border: 3px solid var(--tinta); padding: 18px 18px 14px; }
+  .placar .letra { font-family: var(--manchete); font-size: 22px; }
+  .placar .fala { font-style: italic; min-height: 4.4em; margin: 6px 0 10px; font-size: 16px; line-height: 1.45; }
+  .placar .views { font-family: var(--manchete); font-size: clamp(30px, 3.4vw, 42px); line-height: 1; }
+  .placar > div:not(.campea) .letra { font-size: 18px; }
+  .placar .campea { padding: 26px 26px 20px; }
+  .placar .campea .views { font-size: clamp(64px, 8vw, 100px); }
+  .placar .campea { background: var(--tinta); color: var(--papel-claro); box-shadow: 10px 10px 0 var(--vermelho); }
+  .placar .campea .views { color: var(--ouro); }
+  .nota { font-size: 15px; opacity: .85; }
+  .numeros { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 34px; }
+  h3.sub { font-size: clamp(28px, 3.6vw, 40px); margin: 64px 0 12px; }
+  .numeros > div { border-top: 6px solid var(--tinta); padding-top: 12px; }
+  .numeros b { display: block; font-family: var(--manchete); font-weight: 400; font-size: clamp(44px, 5.8vw, 70px); line-height: 1; color: var(--vermelho); margin-bottom: 6px; }
+
+  /* a janela */
+  .janela .faixa { display: grid; grid-template-columns: 1.2fr .8fr; gap: 44px; align-items: start; }
+  #nicho { display: block; color: var(--vermelho); white-space: nowrap; }
+  .dispensa { background: var(--papel-claro); border: 3px solid var(--tinta); box-shadow: 10px 10px 0 var(--tinta); padding: 24px; }
+  .dispensa ul { list-style: none; margin: 0; padding: 0; }
+  .dispensa li { padding: 12px 0; border-bottom: 1px solid rgba(28, 26, 23, .35); display: grid; grid-template-columns: 104px 1fr; gap: 14px; align-items: baseline; }
+  .dispensa li:last-child { border-bottom: 0; padding-bottom: 0; }
+  .dispensa s { font-family: var(--manchete); font-size: 24px; text-transform: uppercase; text-decoration-color: var(--vermelho); text-decoration-thickness: 4px; white-space: nowrap; }
+  .dispensa span { font-size: 16px; }
+  .nichos { display: flex; flex-wrap: wrap; gap: 10px; margin: 26px 0 0; padding: 0; list-style: none; }
+  .nichos li { font: 700 14px var(--texto); letter-spacing: .1em; text-transform: uppercase; border: 2px solid var(--tinta); padding: 6px 12px; background: var(--papel-claro); }
+
+  /* técnicas */
+  .tecnicas { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; margin-top: 30px; }
+  .tecnica h3 { font-size: 23px; line-height: 1.14; margin: 16px 0 6px; }
+  .tecnica p { font-size: 16px; line-height: 1.5; margin-bottom: 6px; }
+  .tecnica small { font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--vermelho); font-weight: 700; }
+  .aponta { display: flex; flex-direction: column; justify-content: space-between; height: 200px; padding: 20px 20px 16px; background: var(--vermelho); color: var(--papel-claro); border: 3px solid var(--tinta); box-shadow: 6px 6px 0 var(--tinta); text-decoration: none; font: 400 28px/1.1 var(--manchete); text-transform: uppercase; letter-spacing: .5px; transition: transform .12s, box-shadow .12s; }
+  .aponta:hover { transform: translate(2px, 2px); box-shadow: 4px 4px 0 var(--tinta); }
+  .aponta svg { width: 44px; height: 52px; align-self: flex-end; }
+  .exclusivo { display: grid; grid-template-columns: minmax(0, 420px) 1fr; gap: 40px; align-items: center; margin-top: 40px; padding: 34px; background: var(--tinta); color: var(--papel-claro); border: 3px solid var(--tinta); box-shadow: 10px 10px 0 var(--vermelho); scroll-margin-top: 20px; }
+  .exclusivo .palco { box-shadow: none; color: var(--tinta); }
+  .exclusivo h3 { font-size: clamp(34px, 4.6vw, 56px); margin: 14px 0 12px; }
+  .exclusivo p { font-size: 19px; max-width: 34em; }
+  .exclusivo small { font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--ouro); font-weight: 700; }
+  .selo-x { display: inline-block; background: var(--vermelho); color: var(--papel-claro); font: 700 13px var(--texto); letter-spacing: .12em; text-transform: uppercase; padding: 6px 12px; border: 3px solid var(--papel-claro); transform: rotate(-2deg); }
+  .palco { position: relative; height: 200px; background: var(--papel-claro); border: 3px solid var(--tinta); box-shadow: 6px 6px 0 var(--tinta); overflow: hidden; font-family: var(--manchete); text-transform: uppercase; line-height: 1; }
+  .palco * { position: absolute; }
+  .palco.escuro { background: var(--tinta); color: var(--papel-claro); }
+  /* 1 quadro zero */
+  .d-zero .cel { left: 14px; top: 14px; bottom: 14px; aspect-ratio: 9 / 16; background: var(--tinta); border: 3px solid var(--tinta); }
+  .d-zero .g { left: 7px; right: 7px; top: 18px; background: var(--ouro); color: var(--tinta); font-size: 12px; line-height: 1.15; padding: 6px 4px 4px; text-align: center; }
+  .d-zero .o1 { left: 12px; bottom: 22px; width: 26px; height: 26px; border-radius: 50%; background: var(--vermelho); }
+  .d-zero .o2 { right: 12px; bottom: 20px; width: 22px; height: 36px; background: var(--papel-claro); }
+  .d-zero .crono { right: 12px; top: 26px; font-size: 34px; color: var(--vermelho); font-variant-numeric: tabular-nums; }
+  .d-zero .leg { right: 12px; left: 124px; top: 74px; text-align: right; font: 700 12px/1.35 var(--texto); text-transform: none; }
+  /* 2 aberturas */
+  .d-abre .fx { left: 16px; right: 16px; height: 36px; }
+  .d-abre .fx:nth-child(1) { top: 24px; } .d-abre .fx:nth-child(2) { top: 82px; } .d-abre .fx:nth-child(3) { top: 140px; }
+  .d-abre .ab { left: 0; top: 0; bottom: 0; width: 24%; transform-origin: left; color: var(--papel-claro); font-size: 20px; display: grid; place-items: center; }
+  .d-abre .fx:nth-child(1) .ab { background: #6b6558; } .d-abre .fx:nth-child(2) .ab { background: var(--ouro); color: var(--tinta); } .d-abre .fx:nth-child(3) .ab { background: var(--vermelho); }
+  .d-abre .co { left: 26%; top: 0; bottom: 0; width: 32%; background: var(--tinta); transform-origin: left; }
+  .d-abre .n { right: 0; top: 7px; font-size: 22px; }
+  .d-abre .fx:nth-child(3) .n { color: var(--vermelho); font-size: 30px; top: 2px; }
+  /* 3 palavra */
+  .d-palavra .frase { left: 14px; right: 14px; top: 20px; font: 700 17px/1.4 var(--texto); text-transform: none; }
+  .d-palavra .frase span { position: static; opacity: .28; }
+  .d-palavra .frase span.dita { opacity: 1; }
+  .d-palavra .frase span.ancora { box-shadow: inset 0 -7px 0 var(--ouro); }
+  .d-palavra .seta { left: 44px; bottom: 26px; width: 0; height: 0; border: 22px solid transparent; border-bottom: 38px solid var(--vermelho); border-top: 0; }
+  .d-palavra .haste { left: 58px; bottom: 26px; width: 16px; height: 34px; background: var(--vermelho); transform-origin: bottom; }
+  .d-palavra .p { bottom: 34px; width: 20px; height: 20px; border-radius: 50%; background: var(--tinta); }
+  /* 4 legenda */
+  .d-legenda .cx { left: 0; right: 0; top: 30px; height: 70px; }
+  .d-legenda .cx i { width: 34px; height: 34px; border: 3px solid var(--papel-claro); border-radius: 50%; left: 50%; top: 14px; margin-left: -17px; }
+  .d-legenda .cx u { left: 50%; top: 50px; width: 70px; height: 34px; margin-left: -35px; border: 3px solid var(--papel-claro); border-bottom: 0; border-radius: 34px 34px 0 0; }
+  .d-legenda .txt { left: 0; right: 0; bottom: 30px; text-align: center; font-size: 25px; letter-spacing: .5px; text-shadow: 2px 2px 0 #000, -2px 2px 0 #000, 2px -2px 0 #000, -2px -2px 0 #000; }
+  .d-legenda .txt b { position: static; font-weight: 400; color: var(--ouro); }
+  /* 5 mola x fade */
+  .d-mola .col { top: 0; bottom: 0; width: 50%; }
+  .d-mola .col:nth-child(2) { left: 50%; border-left: 3px solid var(--tinta); }
+  .d-mola .col span { left: 0; right: 0; bottom: 16px; text-align: center; font: 700 13px var(--texto); letter-spacing: .1em; }
+  .d-mola .bl { left: 50%; top: 42px; width: 74px; height: 74px; margin-left: -37px; background: var(--vermelho); border: 3px solid var(--tinta); }
+  .d-mola .col:nth-child(1) .bl { background: #a59f90; }
+  /* 6 contador */
+  .d-conta .num { left: 0; right: 0; top: 34px; text-align: center; font-size: 62px; color: var(--ouro); font-variant-numeric: tabular-nums; }
+  .d-conta .pts { left: 0; right: 0; bottom: 46px; height: 16px; }
+  .d-conta .pts i { width: 16px; height: 16px; border-radius: 50%; border: 3px solid var(--papel-claro); top: 0; }
+  .d-conta .pts i:nth-child(1) { left: calc(50% - 38px); } .d-conta .pts i:nth-child(2) { left: calc(50% - 8px); } .d-conta .pts i:nth-child(3) { left: calc(50% + 22px); }
+  .d-conta .rot { left: 0; right: 0; bottom: 18px; text-align: center; font-size: 16px; letter-spacing: 2px; }
+  /* 7 promessa */
+  .d-ppp .seg { left: 16px; right: 16px; height: 16px; border: 3px solid var(--tinta); }
+  .d-ppp .seg:nth-child(1) { top: 34px; } .d-ppp .seg:nth-child(2) { top: 90px; } .d-ppp .seg:nth-child(3) { top: 146px; }
+  .d-ppp .seg u { left: 0; top: 0; bottom: 0; width: 100%; background: var(--tinta); transform-origin: left; }
+  .d-ppp .seg:nth-child(3) u { background: var(--vermelho); }
+  .d-ppp .seg span { left: -3px; top: -21px; font: 700 12px var(--texto); letter-spacing: .1em; white-space: nowrap; }
+  .d-ppp .est { right: 14px; top: 104px; font-size: 38px; color: var(--ouro); -webkit-text-stroke: 2px var(--tinta); }
+  /* 8 revisor */
+  .d-rev .ch { width: calc(50% - 20px); height: 30px; border: 2px solid var(--tinta); background: var(--papel); }
+  .d-rev .ch span { left: 6px; top: 8px; font: 700 11px var(--texto); white-space: nowrap; text-transform: none; }
+  .d-rev .ch b { right: 0; top: 0; bottom: 0; width: 24px; background: var(--tinta); color: var(--papel-claro); font-weight: 400; font-size: 17px; display: grid; place-items: center; }
+  .d-rev .ch.ruim b { background: var(--vermelho); }
+  .d-rev .car { right: 14px; bottom: 8px; background: var(--verde); color: var(--papel-claro); font-size: 20px; letter-spacing: 1px; padding: 6px 10px 4px; border: 3px solid var(--tinta); }
+
+  .passos { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; counter-reset: passo; }
+  .passos > div { border-top: 6px solid var(--tinta); padding-top: 12px; counter-increment: passo; }
+  .passos > div::before { content: counter(passo); font-family: var(--manchete); font-size: 54px; line-height: 1; color: var(--vermelho); display: block; }
+
+  .modulos { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 0 40px; counter-reset: m; }
+  .modulos li { counter-increment: m; padding: 14px 0 14px 58px; border-bottom: 1px solid rgba(28, 26, 23, .35); position: relative; }
+  .modulos li::before { content: counter(m, decimal-leading-zero); position: absolute; left: 0; top: 12px; font-family: var(--manchete); font-size: 30px; color: var(--vermelho); }
+  .modulos b { display: block; }
+  .modulos span { font-size: 16px; }
+
+  .duas { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+  .caixa { background: var(--papel-claro); border: 3px solid var(--tinta); padding: 24px; }
+  .lista { margin: 0; padding-left: 20px; }
+  .lista li { margin-bottom: 8px; }
+  .lista li::marker { color: var(--vermelho); }
+
+  /* o kit: bloco escuro, com a esteira e as teclas de som */
+  .kit { background: var(--tinta); color: var(--papel-claro); }
+  .kit h2 { margin: 18px 0 16px; }
+  .kit h2 .ouro { color: var(--ouro); }
+  .kit h3 { font-size: 30px; margin-bottom: 16px; }
+  .esteira { list-style: none; margin: 34px 0 0; padding: 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; counter-reset: e; }
+  .esteira li { counter-increment: e; border: 3px solid rgba(251, 247, 236, .45); padding: 14px 14px 12px; }
+  .esteira li::before { content: counter(e); display: block; font: 400 20px/1 var(--manchete); color: var(--vermelho); margin-bottom: 6px; }
+  .esteira b { display: block; font: 400 32px/1.05 var(--manchete); text-transform: uppercase; letter-spacing: .5px; }
+  .esteira span { display: block; font-size: 15px; line-height: 1.35; margin-top: 6px; }
+  .esteira li.feito { background: var(--ouro); border-color: var(--ouro); color: var(--tinta); }
+  .kit-duas { display: grid; grid-template-columns: 1.1fr .9fr; gap: 48px; margin-top: 52px; align-items: start; }
+  .teclas { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 18px; }
+  .teclas button { font: 400 21px/1 var(--manchete); letter-spacing: .5px; text-transform: uppercase; color: var(--tinta); background: var(--papel-claro); border: 3px solid var(--papel-claro); padding: 16px 6px 13px; cursor: pointer; box-shadow: 5px 5px 0 var(--vermelho); transition: transform .08s, box-shadow .08s, background-color .08s; }
+  .teclas button:hover { background: var(--ouro); border-color: var(--ouro); }
+  .teclas button:active, .teclas button.tocou { transform: translate(5px, 5px); box-shadow: 0 0 0 var(--vermelho); background: var(--ouro); border-color: var(--ouro); }
+  .teclas button:focus-visible { outline-color: var(--ouro); }
+  /* a ficha do kit: papel claro sobre o fundo escuro; número vermelho grande e o ganho ao lado */
+  .ficha { background: var(--papel-claro); color: var(--tinta); border: 3px solid var(--papel-claro); box-shadow: 10px 10px 0 var(--vermelho); }
+  .kit .ficha h3 { font-size: 30px; margin: 0; padding: 17px 28px 13px; background: var(--ouro); color: var(--tinta); border-bottom: 3px solid var(--tinta); }
+  .ficha ul { list-style: none; margin: 0; padding: 4px 28px; }
+  .ficha li { display: grid; grid-template-columns: 104px 1fr; gap: 20px; align-items: center; min-height: 92px; padding: 10px 0; border-bottom: 1px solid rgba(28, 26, 23, .22); }
+  .ficha li:last-child { border-bottom: 0; }
+  .ficha b { font: 400 58px/1 var(--manchete); letter-spacing: .5px; color: var(--vermelho); text-align: center; padding-top: 5px; font-variant-numeric: tabular-nums; }
+  .ficha li:last-child b { font-size: 36px; line-height: .98; text-transform: uppercase; }
+  .ficha span { font-size: 16px; line-height: 1.38; color: rgba(28, 26, 23, .86); }
+  .ficha strong { display: block; font: 400 23px/1.1 var(--manchete); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; color: var(--tinta); }
+  .ficha p { margin: 0; padding: 15px 28px 14px; background: var(--tinta); color: var(--papel-claro); font-size: 16px; line-height: 1.4; border-top: 3px solid var(--tinta); }
+  .ficha p b { font: inherit; font-weight: 700; color: var(--ouro); padding: 0; }
+  .conversa { margin-top: 30px; display: grid; gap: 14px; }
+  .conversa p { margin: 0; padding: 14px 18px 13px; font-size: 17px; line-height: 1.45; max-width: 88%; }
+  .conversa small { display: block; font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 4px; }
+  .conversa .voce { background: var(--papel-claro); color: var(--tinta); justify-self: end; border-radius: 18px 18px 0 18px; }
+  .conversa .voce small { color: var(--vermelho); }
+  .conversa .ia { border: 3px solid var(--ouro); border-radius: 18px 18px 18px 0; }
+  .conversa .ia small { color: var(--ouro); }
+  .kit .chamada { margin-top: 44px; }
+
+  /* planos */
+  .relogio { display: inline-flex; gap: 10px; align-items: baseline; background: var(--tinta); color: var(--papel-claro); padding: 10px 18px; margin-bottom: 26px; flex-wrap: wrap; }
+  .relogio b { font-family: var(--manchete); font-weight: 400; font-size: 30px; color: var(--ouro); font-variant-numeric: tabular-nums; letter-spacing: 1px; }
+  .planos { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 22px; align-items: stretch; }
+  .plano { background: var(--papel-claro); border: 3px solid var(--tinta); padding: 28px; position: relative; display: flex; flex-direction: column; }
+  .plano.forte { background: var(--tinta); color: var(--papel-claro); box-shadow: 10px 10px 0 var(--vermelho); }
+  .plano.forte .preco { color: var(--ouro); }
+  .plano.forte .selo { border-color: var(--papel-claro); }
+  .plano.forte .lista li::marker { color: var(--ouro); }
+  .plano .selo { position: absolute; right: 16px; top: -18px; background: var(--vermelho); color: var(--papel-claro); font: 700 13px var(--texto); letter-spacing: .12em; text-transform: uppercase; padding: 6px 12px; border: 3px solid var(--tinta); transform: rotate(2deg); }
+  .preco { font-family: var(--manchete); font-size: 76px; line-height: 1; margin: 12px 0 2px; }
+  .preco small { font-size: 28px; }
+  .de { font-size: 15px; min-height: 1.6em; }
+  .plano .lista { margin: 18px 0 24px; }
+  .plano .botao { display: block; text-align: center; margin-top: auto; }
+
+  details { border-bottom: 1px solid rgba(28, 26, 23, .35); }
+  summary { cursor: pointer; font-weight: 700; font-size: 19px; padding: 16px 40px 16px 0; list-style: none; position: relative; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: '+'; position: absolute; right: 4px; top: 6px; font-family: var(--manchete); font-size: 34px; color: var(--vermelho); transition: transform .2s; }
+  details[open] summary::after { transform: rotate(45deg); }
+  summary:hover { color: var(--vermelho); }
+  details p { margin: 0 0 18px; max-width: 46em; }
+
+  .fecho { background: var(--tinta); color: var(--papel-claro); text-align: center; }
+  .fecho h2 { max-width: 16em; margin: 0 auto 18px; }
+  .fecho h2 .ouro { color: var(--ouro); }
+  .fecho p { max-width: 34em; margin: 0 auto 30px; font-size: 20px; }
+  .fecho .preco-linha { margin: 22px auto 0; font-size: 15px; opacity: .85; }
+
+  footer { border-top: 3px solid var(--tinta); padding: 30px 0 46px; font-size: 14px; }
+
+  /* botão fixo no celular */
+  .fixo { display: none; }
+
+  @media (min-width: 821px) { h1 .lin { white-space: nowrap; } }
+  @media (max-width: 1000px) {
+    .tecnicas { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 820px) {
+    body { font-size: 17px; }
+    section { padding: 50px 0; }
+    h1 { line-height: 1.17; }
+    .abre { padding: 34px 0 0; }
+    .abre .faixa { padding-bottom: 46px; }
+    .plano.forte { box-shadow: 6px 6px 0 var(--vermelho); }
+    .abre .faixa, .duas, .planos, .modulos, .janela .faixa, .exclusivo, .kit-duas { grid-template-columns: 1fr; }
+    .esteira { grid-template-columns: 1fr 1fr; }
+    .esteira li:last-child { grid-column: span 2; }
+    .kit-duas { gap: 34px; margin-top: 38px; }
+    .exclusivo { padding: 22px; gap: 22px; box-shadow: 6px 6px 0 var(--vermelho); }
+    .vitrine { margin: 22px auto 0; }
+    .video .trofeu { right: -8px; }
+    .placar, .numeros { grid-template-columns: 1fr; }
+    .placar .fala { min-height: 0; }
+    .placar { align-items: stretch; }
+    .placar .campea { box-shadow: 6px 6px 0 var(--vermelho); }
+    .passos { grid-template-columns: 1fr 1fr; }
+    .planos { gap: 34px; }
+    .fixo { display: block; position: fixed; left: 0; right: 0; bottom: 0; z-index: 5; background: var(--vermelho); color: var(--papel-claro); border-top: 3px solid var(--tinta); text-align: center; text-decoration: none; font-family: var(--manchete); font-size: 21px; letter-spacing: 1px; text-transform: uppercase; padding: 13px 10px 11px; transform: translateY(110%); transition: transform .25s; }
+    .fixo.ativo { transform: none; }
+    footer { padding-bottom: 90px; }
+  }
+  @media (max-width: 520px) {
+    .tecnicas { grid-template-columns: 1fr; }
+    .teclas { grid-template-columns: 1fr 1fr; }
+    .ficha ul { padding: 4px 20px; }
+    .kit .ficha h3, .ficha p { padding-left: 20px; padding-right: 20px; }
+    .ficha li { grid-template-columns: 76px 1fr; gap: 14px; }
+    .ficha b { font-size: 46px; }
+    .ficha li:last-child b { font-size: 29px; }
+    .aponta { height: auto; flex-direction: row; align-items: center; gap: 14px; }
+    .aponta svg { align-self: center; flex: none; }
+    .topo span { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<a class="black" id="black" href="#planos">Preço de Black Friday · sobe em <b id="falta-curto">--</b></a>
+
+<div class="topo"><div class="faixa"><b>Reels que Viralizam com IA</b><span>O método da @quehistoriabsurda</span></div></div>
+
+<section class="abre">
+  <div class="faixa">
+    <div>
+      <h1>
+        <span class="lin" data-mov="sobe" data-atraso=".1">Faça a sua</span>
+        <span class="lin" data-mov="sobe" data-atraso=".2"><span class="marca-texto" data-varre>conta crescer</span></span>
+        <span class="lin" data-mov="sobe" data-atraso=".3">com vídeos</span>
+        <span class="lin" data-mov="sobe" data-atraso=".4">feitos por IA.</span>
+      </h1>
+      <p class="grande" data-mov="sobe" data-atraso=".6">Você escreve. A IA desenha, narra e monta. Vídeos animados feitos para <b>prender quem assiste</b> e <b>trazer seguidores</b>, sem aparecer e sem editar.</p>
+      <div class="chamada" data-mov="mola" data-atraso=".8">
+        <a class="botao" href="#planos">Quero aprender</a>
+        <span>A partir de <b data-preco="ebook">R$ 47</b>. Garantia de 7 dias.</span>
+      </div>
+    </div>
+    <figure class="vitrine">
+      <div class="video" data-mov="cai" data-atraso=".45">
+        <span class="trofeu"><b>+20 mil</b> seguidores<br>na primeira semana</span>
+        <iframe id="demo" src="demo/cena.html?render" title="Cena de exemplo rodando" scrolling="no" tabindex="-1"></iframe>
+        <button id="som" type="button" aria-pressed="false">Ligar o som</button>
+      </div>
+      <figcaption>Cena de exemplo do curso, desenhada agora no seu navegador. O som liga no seu primeiro toque na página.</figcaption>
+    </figure>
+  </div>
+  <ul class="selos">
+    <li>Sem aparecer</li><li>Sem saber editar</li><li>Sem saber programar</li>
+  </ul>
+</section>
+
+<section>
+  <div class="faixa">
+    <h2 data-mov="sobe"><span class="lin">Mais de <span class="marca-texto">20 mil seguidores</span></span> <span class="lin">na primeira semana</span></h2>
+    <p class="grande" data-mov="sobe">Foi o que este método fez por uma conta que começou do zero. Um vídeo só trouxe 18 mil seguidores em dois dias.</p>
+    <div class="numeros">
+      <div data-mov="sobe"><b data-conta="20" data-fmt="mais-mil">+20 mil</b>seguidores na primeira semana, com a conta partindo do zero.</div>
+      <div data-mov="sobe" data-atraso=".12"><b data-conta="2" data-fmt="dias">2 dias</b>foi o tempo que um vídeo levou para trazer 18 mil deles.</div>
+      <div data-mov="sobe" data-atraso=".24"><b data-conta="5" data-fmt="M">5M</b>de views nesse mesmo vídeo.</div>
+    </div>
+    <h3 class="sub" data-mov="sobe">O que fez esse vídeo andar foi a abertura</h3>
+    <p data-mov="sobe">Ele foi publicado com três aberturas diferentes e o mesmo corpo, palavra por palavra. Você aprende as três fórmulas, e o ebook mostra o vídeo vencedor frase por frase.</p>
+    <div class="placar">
+      <div class="campea" data-mov="mola"><div class="letra">A abertura que venceu · paradoxo</div><div class="fala">"Por que o impossível aconteceu?"</div><div class="views">5M</div><div>views</div></div>
+      <div data-mov="sobe" data-atraso=".2"><div class="letra">Outra abertura · pergunta</div><div class="fala">Uma pergunta do tipo "e se".</div><div class="views">27 mil</div><div>views</div></div>
+      <div data-mov="sobe" data-atraso=".3"><div class="letra">Outra abertura · manchete</div><div class="fala">O fato dito de forma direta, como num jornal.</div><div class="views">2 mil</div><div>views</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="janela">
+  <div class="faixa">
+    <div>
+      <h2 data-mov="sobe">Quase ninguém faz vídeo assim sobre <span id="nicho">finanças</span></h2>
+      <p class="grande" data-mov="sobe">Vídeo animado e narrado sempre foi coisa de quem paga editor ou motion designer. Com IA e um método, ele sai de um roteiro, na sua mesa, sem equipe.</p>
+      <p data-mov="sobe">Pouca gente sabe que isso já é possível, e menos gente ainda sabe fazer direito. Enquanto o seu nicho não tem ninguém publicando nesse formato, o espaço é de quem chega primeiro: a conta que aparece com vídeo animado e narrado se destaca no meio de tanta gente falando para a câmera.</p>
+      <p data-mov="sobe"><b>Quando todo criador fizer, vira obrigação. Hoje ainda é vantagem.</b></p>
+      <ul class="nichos" data-mov="sobe">
+        <li>Curiosidades</li><li>Finanças</li><li>Notícias</li><li>História</li><li>Games</li><li>Fitness</li><li>Receitas</li><li>Educação</li>
+      </ul>
+    </div>
+    <div class="dispensa" data-mov="mola" data-atraso=".2">
+      <h3>O que você deixa de precisar</h3>
+      <ul>
+        <li><s>Câmera</s><span>O vídeo é desenhado. Você não aparece nem grava nada.</span></li>
+        <li><s>Editor</s><span>Não existe linha do tempo para montar. A cena já nasce no tempo da voz.</span></li>
+        <li><s>Locutor</s><span>A narração é feita com IA, no ritmo certo de vídeo curto.</span></li>
+        <li><s>Designer</s><span>A IA desenha e anima. Você decide e revisa.</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="faixa">
+    <h2 data-mov="sobe">As técnicas que seguram quem assiste</h2>
+    <p class="grande" data-mov="sobe">Cada quadro abaixo está rodando agora, com as mesmas peças que você vai usar nos seus vídeos. Estão na ordem em que você aprende.</p>
+    <div class="tecnicas">
+      <div class="tecnica" data-mov="sobe">
+        <div class="palco d-ppp" data-demo="ppp"><div class="seg"><u></u><span>PROMESSA</span></div><div class="seg"><u></u><span>PROGRESSO</span></div><div class="seg"><u></u><span>PAGAMENTO</span></div><div class="est">★</div></div>
+        <h3>Promessa, progresso, pagamento</h3><p>A estrutura que faz a pessoa chegar ao fim e mandar o vídeo para alguém.</p><small>Módulo 1</small>
+      </div>
+      <div class="tecnica" data-mov="sobe" data-atraso=".08">
+        <div class="palco d-abre" data-demo="abre"><div class="fx"><div class="ab">A</div><div class="co"></div><div class="n">2 mil</div></div><div class="fx"><div class="ab">B</div><div class="co"></div><div class="n">27 mil</div></div><div class="fx"><div class="ab">C</div><div class="co"></div><div class="n">5M</div></div></div>
+        <h3>Um corpo, três aberturas</h3><p>Três fórmulas de primeira frase para o mesmo vídeo. O público escolhe a melhor.</p><small>Módulo 3</small>
+      </div>
+      <div class="tecnica" data-mov="sobe" data-atraso=".16">
+        <div class="palco d-zero" data-demo="zero"><div class="cel"><div class="g">3 erros que travam o seu perfil</div><div class="o1"></div><div class="o2"></div></div><div class="crono">0,0 s</div><div class="leg">O gancho já está escrito antes de a voz começar.</div></div>
+        <h3>Gancho no quadro zero</h3><p>Muita gente assiste sem som. O primeiro quadro já diz por que ficar.</p><small>Módulo 5</small>
+      </div>
+      <div class="tecnica" data-mov="sobe" data-atraso=".24">
+        <div class="palco d-palavra" data-demo="palavra"><div class="frase"></div><div class="haste"></div><div class="seta"></div><div class="p"></div><div class="p"></div><div class="p"></div><div class="p"></div><div class="p"></div><div class="p"></div></div>
+        <h3>Ação presa à palavra</h3><p>Cada coisa entra na tela na palavra exata em que é dita. Nunca "no segundo 4".</p><small>Módulo 5</small>
+      </div>
+      <div class="tecnica" data-mov="sobe">
+        <div class="palco escuro d-conta" data-demo="conta"><div class="num">0</div><div class="pts"><i></i><i></i><i></i></div><div class="rot">1 DE 3</div></div>
+        <h3>Número que corre, progresso à vista</h3><p>Quem assiste vê quanto falta e fica até o último degrau.</p><small>Módulo 5</small>
+      </div>
+      <div class="tecnica" data-mov="sobe" data-atraso=".08">
+        <div class="palco escuro d-legenda" data-demo="legenda"><div class="cx"><i></i><u></u></div><div class="txt"></div></div>
+        <h3>Legenda que acompanha a voz</h3><p>Três palavras por vez, com a palavra que importa em destaque.</p><small>Módulo 6</small>
+      </div>
+      <div class="tecnica" data-mov="sobe" data-atraso=".16">
+        <div class="palco d-mola" data-demo="mola"><div class="col"><div class="bl"></div><span>FADE</span></div><div class="col"><div class="bl"></div><span>MOLA</span></div></div>
+        <h3>Entrada com peso</h3><p>O movimento que separa um vídeo com cara de estúdio de um slide animado.</p><small>Módulo 6</small>
+      </div>
+      <a class="aponta" href="#revisor" data-mov="sobe" data-atraso=".24">
+        <span>E uma que nenhum outro curso tem</span>
+        <svg viewBox="0 0 60 70" aria-hidden="true"><path d="M30 66 L4 36 H20 V4 H40 V36 H56 Z" fill="currentColor"/></svg>
+      </a>
+    </div>
+    <div class="exclusivo" id="revisor" data-mov="mola">
+      <div class="palco d-rev" data-demo="rev"></div>
+      <div>
+        <span class="selo-x">Só neste curso</span>
+        <h3>Revisor com oito notas</h3>
+        <p>Antes de postar, uma segunda IA assiste ao seu vídeo e dá nota de 1 a 10 em oito critérios: gancho, legibilidade, sincronia, ritmo, identidade, cara de IA, zona segura e composição. Ela aponta o que trava o vídeo, você corrige e só então publica.</p>
+        <small>Módulo 8</small>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="faixa">
+    <h2 data-mov="sobe">Quatro passos, e a IA faz o trabalho braçal</h2>
+    <div class="passos">
+      <div data-mov="sobe"><h3>Roteiro</h3><p>Um corpo e três aberturas, sobre o que o seu público já quer saber. Cada afirmação com fonte.</p></div>
+      <div data-mov="sobe" data-atraso=".1"><h3>Voz</h3><p>Narração com IA, no ritmo de quem conta uma novidade a um amigo. Nunca a voz de uma pessoa real.</p></div>
+      <div data-mov="sobe" data-atraso=".2"><h3>Cena</h3><p>A IA desenha e anima cada frase num arquivo que você abre no navegador. Cada ação presa a uma palavra da fala.</p></div>
+      <div data-mov="sobe" data-atraso=".3"><h3>Vídeo</h3><p>Você confere, revisa e grava a tela do celular. Com o kit, o computador monta o MP4 com trilha e efeitos.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="faixa">
+    <h2 data-mov="sobe">Dez módulos. Cada um termina com algo pronto na mão</h2>
+    <ol class="modulos" data-mov="sobe">
+      <li><b>Por que funciona</b><span>O formato e a regra de promessa, progresso e pagamento.</span></li>
+      <li><b>A ideia</b><span>As receitas de ideia que prendem, e por que curiosidade solta não anda.</span></li>
+      <li><b>O roteiro</b><span>Um corpo e três ganchos. O vídeo de 5 milhões dissecado frase por frase.</span></li>
+      <li><b>Voz com IA</b><span>Escolher a voz, acertar o ritmo e o que nunca fazer.</span></li>
+      <li><b>A grade</b><span>A tabela que liga cada coisa na tela a uma palavra.</span></li>
+      <li><b>Caminho fácil</b><span>O modelo de cena: sem instalar nada, até o vídeo gravado no celular.</span></li>
+      <li><b>Caminho avançado</b><span>O kit: voz com o tempo exato de cada palavra, trilha, efeitos e MP4.</span></li>
+      <li><b>Revisão</b><span>O revisor separado, as oito notas e o que dá cara de feito por IA.</span></li>
+      <li><b>Capa e publicação</b><span>Capa, legenda, horário, reel de teste e os três aplicativos.</span></li>
+      <li><b>Números e dinheiro</b><span>Ler o resultado, decidir o próximo vídeo e como cada plataforma paga.</span></li>
+    </ol>
+  </div>
+</section>
+
+<section class="kit" id="kit">
+  <div class="faixa">
+    <span class="selo-x" data-mov="sobe">Vem no Curso</span>
+    <h2 data-mov="sobe"><span class="lin">Um kit que faz o vídeo</span> <span class="lin ouro">enquanto você assiste</span></h2>
+    <p class="grande" data-mov="sobe">Você abre uma pasta no Claude Code e escreve o que quer, em português. A IA faz o resto.</p>
+    <ol class="esteira" data-demo="esteira" data-mov="sobe">
+      <li><b>Instala</b><span>tudo, com uma mensagem</span></li>
+      <li><b>Narra</b><span>voz no segundo exato de cada palavra</span></li>
+      <li><b>Anima</b><span>cada cena presa à fala</span></li>
+      <li><b>Sonoriza</b><span>trilha e efeitos no volume certo</span></li>
+      <li><b>Entrega</b><span>o MP4 pronto para postar</span></li>
+    </ol>
+    <div class="kit-duas">
+      <div data-mov="sobe">
+        <h3>Aperte e ouça os efeitos do kit</h3>
+        <div class="teclas"><button type="button" data-efeito="impacto">Impacto</button><button type="button" data-efeito="baque">Baque</button><button type="button" data-efeito="whoosh">Whoosh</button><button type="button" data-efeito="pop">Pop</button><button type="button" data-efeito="ding">Ding</button><button type="button" data-efeito="caixa">Caixa</button><button type="button" data-efeito="subida">Subida</button><button type="button" data-efeito="mensagem">Mensagem</button><button type="button" data-efeito="brilho">Brilho</button><button type="button" data-efeito="foto">Foto</button><button type="button" data-efeito="falha">Falha</button><button type="button" data-efeito="aplausos">Aplausos</button></div>
+        <div class="conversa"><p class="voce"><small>Você escreve</small>Ponha a trilha calma. Um impacto em "três erros" e um ding em "crescer".</p><p class="ia"><small>O kit responde</small>Feito, cada som na palavra que você pediu. O rascunho ficou pronto em 11 segundos.</p></div>
+      </div>
+      <div class="ficha" data-mov="mola" data-atraso=".12">
+        <h3>O que vem no kit</h3>
+        <ul>
+          <li><b>+20</b><span><strong>Efeitos sonoros</strong>Cada um preso à palavra que você escolher.</span></li>
+          <li><b>+5</b><span><strong>Trilhas de fundo</strong>O volume baixa sozinho atrás da voz.</span></li>
+          <li><b>9</b><span><strong>Etapas guiadas</strong>A IA conduz da ideia ao vídeo e espera o seu ok.</span></li>
+          <li><b>8</b><span><strong>Notas do revisor</strong>Uma segunda IA julga o vídeo antes de você postar.</span></li>
+          <li><b>1</b><span><strong>Mensagem para instalar</strong>Você não digita nenhum comando.</span></li>
+          <li><b>Full<br>HD</b><span><strong>Vídeo final em MP4</strong>Montado quadro a quadro, sem gravar a tela.</span></li>
+        </ul>
+        <p>E um <b>vídeo de exemplo pronto</b>, para rodar no primeiro dia.</p>
+      </div>
+    </div>
+    <div class="chamada" data-mov="mola">
+      <a class="botao" href="#planos">Quero o kit</a>
+      <span>Vem no Curso e no Curso + Ebook. Roda no Claude Code, que pede um plano pago do Claude.</span>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="faixa">
+    <h2 data-mov="sobe">E o modelo de cena</h2>
+    <p class="grande" data-mov="sobe"><b>Vem no Ebook e no Curso.</b> Um arquivo só, que abre no navegador. A IA devolve o seu vídeo dentro dele, e um botão confere tudo antes de você gravar. Sem instalar nada.</p>
+  </div>
+</section>
+
+<section>
+  <div class="faixa duas">
+    <div class="caixa" data-mov="sobe">
+      <h3>É para você se</h3>
+      <ul class="lista">
+        <li>Cria conteúdo, ou quer começar, e quer ver a conta crescer.</li>
+        <li>Quer uma página de vídeos sem aparecer e sem aprender a editar.</li>
+        <li>Prefere um processo com etapas a depender de inspiração.</li>
+      </ul>
+    </div>
+    <div class="caixa" data-mov="sobe" data-atraso=".12">
+      <h3>Não é para você se</h3>
+      <ul class="lista">
+        <li>Espera um botão que faz o vídeo sozinho. A IA desenha e monta; a ideia e o gancho são seus.</li>
+        <li>Quer uma promessa de renda. O curso ensina o método e não promete faturamento.</li>
+        <li>Quer o kit e não tem computador. O Ebook funciona só com o celular e um navegador.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="planos">
+  <div class="faixa">
+    <h2>Preço de Black Friday até 30 de novembro</h2>
+    <div class="relogio" id="relogio"><span>O preço sobe em</span><b id="falta">--</b></div>
+    <div class="planos">
+      <div class="plano" data-mov="sobe">
+        <h3>Ebook</h3>
+        <div class="preco"><small>R$</small> <span data-preco="ebook-num">47</span></div>
+        <div class="de" data-de="ebook">Depois de 30/11: R$ 67</div>
+        <ul class="lista">
+          <li>O método em 10 módulos, em PDF.</li>
+          <li>O modelo de cena, com um vídeo de exemplo dentro.</li>
+          <li>O pedido pronto de cada etapa, dentro dos módulos.</li>
+          <li>A ficha de episódio e a lista de conferência.</li>
+        </ul>
+        <a class="botao claro" data-comprar="ebook" href="#planos">Quero o ebook</a>
+      </div>
+      <div class="plano" data-mov="sobe" data-atraso=".1">
+        <h3>Curso</h3>
+        <div class="preco"><small>R$</small> <span data-preco="curso-num">77</span></div>
+        <div class="de" data-de="curso">Depois de 30/11: R$ 117</div>
+        <ul class="lista">
+          <li>Aulas curtas em vídeo, de tela gravada.</li>
+          <li>O kit para o Claude, com atualizações por um ano.</li>
+          <li>O modelo de cena, com um vídeo de exemplo dentro.</li>
+          <li>Mais de 20 efeitos e trilhas de fundo prontos para usar.</li>
+        </ul>
+        <a class="botao claro" data-comprar="curso" href="#planos">Quero o curso</a>
+      </div>
+      <div class="plano forte" data-mov="mola" data-atraso=".2">
+        <div class="selo" data-impeccable-ignore="kicker-above-heading">Leva tudo</div>
+        <h3>Curso + Ebook</h3>
+        <div class="preco"><small>R$</small> <span data-preco="combo-num">97</span></div>
+        <div class="de" data-de="combo">Depois de 30/11: R$ 147</div>
+        <ul class="lista">
+          <li>Tudo do Curso: as aulas, o kit e os sons.</li>
+          <li>Tudo do Ebook: o método em 10 módulos, a ficha e a lista de conferência.</li>
+          <li>Sai R$ <span data-economia>27</span> mais barato que os dois separados.</li>
+        </ul>
+        <a class="botao" data-comprar="combo" href="#planos">Quero os dois</a>
+      </div>
+    </div>
+    <p class="nota" style="margin-top:26px">Pagamento por Pix ou cartão, pela Kiwify. Garantia de 7 dias: se não servir, você pede o dinheiro de volta na própria plataforma.</p>
+  </div>
+</section>
+
+<section>
+  <div class="faixa">
+    <h2>Sem rodeio</h2>
+    <details><summary>Serve para o meu nicho?</summary><p>Serve. O método não depende do assunto: uma ideia com consequência para quem assiste, três aberturas, a grade e a revisão. Os exemplos do ebook vêm da conta @quehistoriabsurda, e você aplica cada etapa ao seu assunto.</p></details>
+    <details><summary>Como isso faz a minha conta crescer?</summary><p>Vídeo com gancho forte é entregue a quem ainda não segue você, e é daí que vem seguidor novo. Numa conta criada com este método, um único vídeo trouxe 18 mil seguidores em dois dias. Nenhum método repete isso em todo vídeo: o que ele faz é dar a cada vídeo a melhor chance. O módulo 10 mostra como ler o resultado e como cada plataforma paga.</p></details>
+    <details><summary>Preciso saber programar ou editar vídeo?</summary><p>Não. Você escreve em português o que quer, e a IA escreve o arquivo. O que o curso pede de você é roteiro, checagem e olho para revisar.</p></details>
+    <details><summary>Vou viralizar?</summary><p>Nenhum método sério garante um viral. O que este método controla é o que mais pesa: cada vídeo sai com três aberturas testadas, uma promessa que é paga no fim e uma revisão antes de ir ao ar. Foi assim que o mesmo vídeo saiu de 2 mil para 5 milhões de views.</p></details>
+    <details><summary>Do que eu preciso para o Ebook?</summary><p>De um celular, do navegador Chrome e de uma IA de conversa, como o Claude ou o ChatGPT. Para a voz, uma conta num serviço de narração com IA. O módulo 4 mostra o que conferir sobre o uso comercial da voz antes de postar.</p></details>
+    <details><summary>E para o Curso?</summary><p>As aulas você assiste em qualquer aparelho. Para o kit, você precisa de um computador, do Claude Code (que pede um plano pago do Claude), do Node.js, que é gratuito, e de uma conta na ElevenLabs para gerar a voz pelo kit. O kit foi montado e testado no Windows. Os comandos são os mesmos no Mac e no Linux, mas esses dois não foram testados.</p></details>
+    <details><summary>Os vídeos são feitos com IA mesmo?</summary><p>São. A voz é sintética, o desenho é escrito por IA e a montagem é feita por código. O roteiro, as fontes e as decisões são seus.</p></details>
+    <details><summary>Como recebo?</summary><p>Logo depois do pagamento, a Kiwify libera a área do aluno. No Ebook, com o PDF e o modelo de cena. No Curso, com as aulas e o arquivo do kit. No Curso + Ebook, com tudo.</p></details>
+  </div>
+</section>
+
+<section class="fecho">
+  <div class="faixa">
+    <h2 data-mov="sobe">Daqui a um ano, muita gente vai saber fazer. <span class="ouro">Hoje, quase ninguém no seu nicho sabe.</span></h2>
+    <p data-mov="sobe">Aprenda agora, enquanto o formato ainda é novidade para o seu público.</p>
+    <a class="botao" href="#planos" data-mov="mola" data-atraso=".15">Quero aprender</a>
+    <div class="preco-linha">A partir de <b data-preco="ebook">R$ 47</b>. Garantia de 7 dias.</div>
+  </div>
+</section>
+
+<footer>
+  <div class="faixa">
+    <p><b>Reels que Viralizam com IA</b> · o método da conta @quehistoriabsurda.</p>
+    <p>Resultados passados da conta não garantem os seus. Este curso não promete views, seguidores nem renda. Instagram, TikTok, YouTube, Claude e ElevenLabs são marcas dos seus donos e não têm relação com este curso.</p>
+  </div>
+</footer>
+
+<a class="fixo" id="fixo" href="#planos">Ver os planos · a partir de <span data-preco="ebook">R$ 47</span></a>
+
+<script>
+'use strict';
+/* ---------- AJUSTES: tudo o que muda sem mexer na página ---------- */
+const AJUSTES = {
+  // endereços do checkout da Kiwify (preencher quando os produtos existirem)
+  comprar: { ebook: '', curso: '', combo: '' },
+  fimDaBlack: '2026-11-30T23:59:59-03:00',
+  precos: { black: { ebook: 47, curso: 77, combo: 97 }, cheio: { ebook: 67, curso: 117, combo: 147 } },
+  // a palavra que troca no título "Quase ninguém faz vídeo assim para…"
+  nichos: ['finanças', 'curiosidades', 'notícias', 'história', 'games', 'fitness', 'receitas', 'o seu assunto'],
+  trocaNicho: 2.2,   // segundos em cada nicho
+};
+
+/* ---------- preços e contador ---------- */
+const fim = new Date(AJUSTES.fimDaBlack).getTime();
+const emBlack = () => Date.now() < fim;
+function aplicaPrecos() {
+  const p = emBlack() ? AJUSTES.precos.black : AJUSTES.precos.cheio;
+  document.querySelectorAll('[data-preco="ebook"]').forEach(e => { e.textContent = `R$ ${p.ebook}`; });
+  document.querySelector('[data-preco="ebook-num"]').textContent = p.ebook;
+  document.querySelector('[data-preco="curso-num"]').textContent = p.curso;
+  document.querySelector('[data-preco="combo-num"]').textContent = p.combo;
+  document.querySelector('[data-economia]').textContent = p.ebook + p.curso - p.combo;
+  if (!emBlack()) {
+    document.querySelectorAll('[data-de]').forEach(e => { e.textContent = ''; });
+    document.getElementById('relogio').style.display = 'none';
+    document.getElementById('black').style.display = 'none';
+    document.querySelector('#planos h2').textContent = 'Escolha o seu plano';
+  }
+}
+function relogio() {
+  const falta = Math.max(0, fim - Date.now());
+  if (!falta) { aplicaPrecos(); return; }
+  const d = Math.floor(falta / 864e5), h = Math.floor(falta / 36e5) % 24, m = Math.floor(falta / 6e4) % 60, s = Math.floor(falta / 1e3) % 60;
+  const dois = n => String(n).padStart(2, '0');
+  document.getElementById('falta').textContent = `${d} d ${dois(h)} h ${dois(m)} min ${dois(s)} s`;
+  document.getElementById('falta-curto').textContent = d > 1 ? `${d} dias` : `${dois(d * 24 + h)}:${dois(m)}:${dois(s)}`;
+  setTimeout(relogio, 1000);
+}
+aplicaPrecos(); relogio();
+
+document.querySelectorAll('[data-comprar]').forEach(a => {
+  const destino = AJUSTES.comprar[a.dataset.comprar];
+  if (destino) a.href = destino;
+});
+
+/* ---------- movimento: as mesmas curvas do modelo de cena ---------- */
+const limita = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const mistura = (a, b, p) => a + (b - a) * p;
+const sobe = (t, t0, dur = 0.4) => 1 - Math.pow(1 - limita((t - t0) / dur), 3);
+const mola = (t, t0, dur = 0.5) => { const x = limita((t - t0) / dur) - 1; return 1 + 2.7 * x * x * x + 1.7 * x * x; };
+const pulso = (t, t0, dur = 0.35) => Math.sin(limita((t - t0) / dur) * Math.PI);
+const poe = (el, { x = 0, y = 0, escala = 1, ex, giro = 0, opacidade = 1 } = {}) => {
+  el.style.transform = `translate(${x}px, ${y}px) rotate(${giro}deg) scale(${ex ?? escala}, ${escala})`;
+  el.style.opacity = opacidade;
+};
+const dec = v => String(Math.round(v * 10) / 10).replace('.', ',');   // 5 fica "5", 2.34 fica "2,3"
+const numero = (v, fmt) => {
+  if (fmt === 'mil') return `${Math.round(v)} mil`;
+  if (fmt === 'mais-mil') return `+${Math.round(v)} mil`;
+  if (fmt === 'dias') return `${Math.max(1, Math.round(v))} dias`;
+  if (fmt === 'M') return `${dec(v)}M`;
+  if (fmt === 'milhoes') return `${dec(v)} milhões.`;
+  return String(Math.round(v));
+};
+// número cheio vira "2 mil", "27 mil", "5M"
+const curto = n => n >= 1e6 ? `${dec(n / 1e6)}M` : n >= 1000 ? `${Math.round(n / 1000)} mil` : String(Math.round(n));
+
+const anima = document.documentElement.classList.contains('anima');
+const agora = () => performance.now() / 1000;
+
+/* ---------- entradas: cada bloco entra uma vez, quando aparece ---------- */
+const ENTRADA = {
+  sobe: { dur: 0.6, faz: (el, t) => { const p = sobe(t, 0, 0.6); el.style.opacity = p; el.style.transform = `translateY(${(1 - p) * 30}px)`; } },
+  mola: { dur: 0.6, faz: (el, t) => { el.style.opacity = sobe(t, 0, 0.25); el.style.transform = `scale(${mistura(0.86, 1, mola(t, 0, 0.6))})`; } },
+  cai:  { dur: 0.8, faz: (el, t) => { const p = mola(t, 0, 0.8); el.style.opacity = sobe(t, 0, 0.25); el.style.transform = `translateY(${(1 - p) * -60}px) rotate(${mistura(-7, 1.2, p)}deg)`; } },
+};
+const entrando = new Set(), contando = new Set();
+function entra(el) {
+  const inicio = agora() + Number(el.dataset.atraso || 0);
+  entrando.add({ el, inicio, tipo: ENTRADA[el.dataset.mov] || ENTRADA.sobe });
+  el.querySelectorAll('[data-conta], [data-varre]').forEach(n => conta(n, inicio + 0.25));
+  if (el.matches('[data-conta], [data-varre]')) conta(el, inicio + 0.25);
+}
+function conta(el, inicio) {
+  if (el.dataset.contou) return;
+  el.dataset.contou = '1';
+  contando.add({ el, inicio, alvo: el.dataset.conta == null ? null : Number(el.dataset.conta), fmt: el.dataset.fmt, varre: el.hasAttribute('data-varre') });
+  if (el.hasAttribute('data-varre')) el.style.setProperty('--varre', '0%');
+}
+function tocaEntradas(t) {
+  for (const e of entrando) {
+    const dt = t - e.inicio;
+    if (dt < 0) continue;
+    if (dt >= e.tipo.dur) { e.el.dataset.feito = '1'; e.el.style.opacity = ''; e.el.style.transform = ''; entrando.delete(e); continue; }
+    e.tipo.faz(e.el, dt);
+  }
+  for (const c of contando) {
+    const dt = t - c.inicio;
+    if (dt < 0) { if (c.alvo !== null) c.el.textContent = numero(0, c.fmt); continue; }
+    if (c.alvo !== null) c.el.textContent = numero(c.alvo * sobe(dt, 0, 1.1), c.fmt);
+    if (c.varre) c.el.style.setProperty('--varre', `${sobe(dt, c.alvo === null ? 0.1 : 0.9, 0.5) * 100}%`);
+    if (dt >= 1.5) contando.delete(c);
+  }
+}
+
+/* ---------- técnicas: oito quadros pequenos, desenhados por tempo ---------- */
+const q = (el, s) => el.querySelector(s), qq = (el, s) => [...el.querySelectorAll(s)];
+const DEMOS = {
+  // a esteira do kit: os cinco passos acendem em fila
+  esteira: { dur: 6.4, faz(el, t) {
+    qq(el, 'li').forEach((li, i) => {
+      li.classList.toggle('feito', t >= 0.5 + 0.9 * i);
+      li.style.transform = `scale(${1 + 0.05 * pulso(t, 0.5 + 0.9 * i, 0.35)})`;
+    });
+  } },
+  zero: { dur: 4.2, faz(el, t) {
+    q(el, '.crono').textContent = `${Math.min(t, 3).toFixed(1).replace('.', ',')} s`;
+    poe(q(el, '.g'), { escala: 1 + 0.08 * pulso(t, 0, 0.4) });
+    poe(q(el, '.o1'), { escala: mola(t, 1.1), opacidade: t < 1.1 ? 0 : 1 });
+    poe(q(el, '.o2'), { escala: mola(t, 2.0), opacidade: t < 2.0 ? 0 : 1 });
+    q(el, '.leg').style.opacity = 1 - sobe(t, 1.0, 0.3) * 0.65;
+  } },
+  abre: { dur: 5.6, faz(el, t) {
+    qq(el, '.fx').forEach((f, i) => {
+      poe(q(f, '.ab'), { ex: mola(t, 0.3 + 0.3 * i, 0.45) });
+      poe(q(f, '.co'), { ex: sobe(t, 1.4, 0.7) });
+      const tn = 2.6 + 0.55 * i;
+      poe(q(f, '.n'), { escala: mistura(0.4, 1, mola(t, tn)) + (i === 2 ? 0.18 * pulso(t, tn + 0.5, 0.5) : 0), opacidade: t < tn ? 0 : 1 });
+    });
+  } },
+  palavra: { dur: 5.4, monta(el) {
+    q(el, '.frase').innerHTML = ['O', 'preço', 'subiu,', 'e', 'a', 'fila', 'dobrou.'].map((p, i) => `<span${i === 2 || i === 6 ? ' class="ancora"' : ''}>${p}</span>`).join(' ');
+  }, faz(el, t) {
+    const T0 = 0.5, PASSO = 0.42;
+    qq(el, '.frase span').forEach((s, i) => s.classList.toggle('dita', t >= T0 + PASSO * i));
+    const tSubiu = T0 + PASSO * 2 - 0.1, tDobrou = T0 + PASSO * 6 - 0.1, p = mola(t, tSubiu, 0.55);
+    poe(q(el, '.haste'), { escala: 1, opacidade: t < tSubiu ? 0 : 1 }); q(el, '.haste').style.transform = `scaleY(${p})`;
+    poe(q(el, '.seta'), { y: -34 * p, escala: mistura(0.5, 1, p), opacidade: t < tSubiu ? 0 : 1 });
+    qq(el, '.p').forEach((b, i) => {
+      const novo = i >= 3, x = 120 + (i % 3) * 30, y = novo ? -28 : 0;
+      b.style.left = `${x}px`;
+      poe(b, { y, escala: novo ? mola(t, tDobrou + 0.07 * (i - 3)) : 1, opacidade: novo && t < tDobrou ? 0 : 1 });
+    });
+  } },
+  legenda: { dur: 5.1, blocos: [['QUEM', 'ASSISTE', '<b>DECIDE</b>'], ['EM', '<b>TRÊS</b>', 'SEGUNDOS'], ['SE', 'FICA', 'OU', '<b>SAI</b>']], faz(el, t) {
+    const b = Math.min(2, Math.floor(t / 1.6)), tb = t - b * 1.6, lista = this.blocos[b];
+    const n = Math.min(lista.length, 1 + Math.floor(tb / 0.36)), chave = `${b}-${n}`, txt = q(el, '.txt');
+    if (txt.dataset.chave !== chave) { txt.dataset.chave = chave; txt.innerHTML = lista.slice(0, n).join(' '); }
+    poe(txt, { escala: 1 + 0.07 * pulso(tb, (n - 1) * 0.36, 0.2) });
+    poe(q(el, '.cx'), { y: 3 * Math.sin(t * 2.4) });
+  } },
+  mola: { dur: 3.4, faz(el, t) {
+    const [a, b] = qq(el, '.bl'), some = 1 - sobe(t, 2.9, 0.25);
+    poe(a, { opacidade: sobe(t, 0.5, 0.7) * some });
+    poe(b, { escala: mistura(0.2, 1, mola(t, 0.5, 0.6)), y: (1 - sobe(t, 0.5, 0.4)) * 40, giro: (1 - mola(t, 0.5, 0.6)) * -12, opacidade: (t < 0.5 ? 0 : 1) * some });
+  } },
+  conta: { dur: 6.4, degraus: [[0.4, 0, 2000], [2.2, 2000, 27000], [4.0, 27000, 5000000]], faz(el, t) {
+    let v = 0, n = 0, bate = 0;
+    this.degraus.forEach(([t0, de, para], i) => { if (t >= t0) { v = mistura(de, para, sobe(t, t0, 0.9)); n = i + 1; bate = pulso(t, t0 + 0.8, 0.4); } });
+    const num = q(el, '.num'); num.textContent = curto(v); poe(num, { escala: 1 + 0.12 * bate });
+    qq(el, '.pts i').forEach((p, i) => { p.style.background = i < n ? 'var(--ouro)' : 'transparent'; p.style.borderColor = i < n ? 'var(--ouro)' : ''; poe(p, { escala: 1 + (i === n - 1 ? 0.6 * pulso(t, this.degraus[i][0], 0.4) : 0) }); });
+    q(el, '.rot').textContent = `${Math.max(1, n)} DE 3`;
+  } },
+  ppp: { dur: 5.2, faz(el, t) {
+    qq(el, '.seg u').forEach((u, i) => poe(u, { ex: limita((t - 0.4 - 1.2 * i) / 1.1) }));
+    poe(q(el, '.est'), { escala: mola(t, 3.9, 0.6) + 0.25 * pulso(t, 4.4, 0.5), giro: (1 - sobe(t, 3.9, 0.6)) * -90, opacidade: t < 3.9 ? 0 : 1 });
+  } },
+  rev: { dur: 6, notas: [['Gancho', 9], ['Leitura', 8], ['Tempo', 9], ['Ritmo', 6], ['Marca', 9], ['Sem IA', 8], ['Margens', 9], ['Foco', 8]], monta(el) {
+    el.innerHTML = this.notas.map(([nome, n], i) => `<div class="ch" style="left:${i % 2 ? 'calc(50% + 6px)' : '14px'};top:${12 + Math.floor(i / 2) * 36}px"><span>${nome}</span><b>${n}</b></div>`).join('') + '<div class="car">Aprovado</div>';
+  }, faz(el, t) {
+    qq(el, '.ch').forEach((c, i) => {
+      poe(c, { escala: mistura(0.5, 1, mola(t, 0.3 + 0.28 * i, 0.4)) + (i === 3 ? 0.1 * pulso(t, 3.6, 0.4) : 0), opacidade: t < 0.3 + 0.28 * i ? 0 : 1 });
+      if (i === 3) { const ruim = t < 3.6; c.classList.toggle('ruim', ruim); q(c, 'b').textContent = ruim ? 6 : 9; }
+    });
+    poe(q(el, '.car'), { escala: mistura(2, 1, mola(t, 4.4, 0.45)), giro: -5, opacidade: t < 4.4 ? 0 : 1 });
+  } },
+};
+const palcos = [...document.querySelectorAll('[data-demo]')].map(el => {
+  const demo = DEMOS[el.dataset.demo];
+  if (demo.monta) demo.monta(el);
+  // parado (sem movimento): mostra o quadro final de cada demonstração
+  demo.faz(el, demo.dur - 0.5);
+  return { el, demo, visivel: false, partida: 0 };
+});
+
+/* ---------- a palavra do nicho, que troca ---------- */
+const nicho = document.getElementById('nicho');
+let nichoAtual = -1;
+function tocaNicho(t) {
+  const i = Math.floor(t / AJUSTES.trocaNicho) % AJUSTES.nichos.length, dt = t % AJUSTES.trocaNicho;
+  if (i !== nichoAtual) { nichoAtual = i; nicho.textContent = AJUSTES.nichos[i]; }
+  nicho.style.transform = `translateY(${(1 - mola(dt, 0, 0.45)) * 22}px)`;
+  nicho.style.opacity = sobe(dt, 0, 0.2) * (1 - sobe(dt, AJUSTES.trocaNicho - 0.18, 0.18));
+}
+
+/* ---------- quem está na tela ---------- */
+if (anima) {
+  const olheiro = new IntersectionObserver(lista => lista.forEach(o => {
+    if (!o.isIntersecting) return;
+    olheiro.unobserve(o.target); entra(o.target);
+  }), { threshold: 0.15 });
+  const comeca = () => document.querySelectorAll('[data-mov]').forEach(el => olheiro.observe(el));
+  // espera as fontes para a manchete não entrar com a letra errada (com teto de 1,2 s)
+  Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 1200))]).then(comeca);
+  const vigia = new IntersectionObserver(lista => lista.forEach(o => {
+    const p = palcos.find(x => x.el === o.target);
+    if (o.isIntersecting && !p.visivel) p.partida = agora();
+    p.visivel = o.isIntersecting;
+  }), { threshold: 0.35 });
+  palcos.forEach(p => vigia.observe(p.el));
+}
+
+/* botão fixo do celular: aparece depois da abertura e some nos planos */
+const fixo = document.getElementById('fixo'), abre = document.querySelector('.abre'), planos = document.getElementById('planos');
+let viuAbre = true, viuPlanos = false;
+const ajustaFixo = () => fixo.classList.toggle('ativo', !viuAbre && !viuPlanos);
+new IntersectionObserver(l => { viuAbre = l[0].isIntersecting; ajustaFixo(); }).observe(abre);
+new IntersectionObserver(l => { viuPlanos = l[0].isIntersecting; ajustaFixo(); }).observe(planos);
+
+/* ---------- teclas: os efeitos do kit, para ouvir ---------- */
+const efeitos = {};
+document.querySelectorAll('[data-efeito]').forEach(tecla => {
+  tecla.onclick = () => {
+    const nome = tecla.dataset.efeito;
+    const a = efeitos[nome] || (efeitos[nome] = new Audio(`sons/${nome}.mp3`));
+    a.currentTime = 0; a.play().catch(() => {});
+    tecla.classList.add('tocou'); setTimeout(() => tecla.classList.remove('tocou'), 220);
+  };
+});
+
+/* ---------- demo: a cena do curso rodando ao vivo ---------- */
+const quadro = document.getElementById('demo'), botaoSom = document.getElementById('som');
+const som = new Audio('demo/som.mp3');   // a mistura do kit: voz, trilha e efeitos
+som.preload = 'none'; som.loop = true;
+const CAUDA = 0.5;                       // o último quadro fica um instante parado antes de recomeçar
+let comSom = false, querSom = true, naTela = true, partida = performance.now();
+function passo() {
+  requestAnimationFrame(passo);
+  if (document.hidden) return;
+  if (anima) {
+    const t = agora();
+    tocaEntradas(t);
+    for (const p of palcos) if (p.visivel) p.demo.faz(p.el, (t - p.partida) % p.demo.dur);
+    tocaNicho(t);
+  }
+  const cena = quadro.contentWindow;
+  if (!cena || typeof cena.__seek !== 'function') return;
+  const total = cena.__duracao() + CAUDA;
+  const t = comSom ? som.currentTime : ((performance.now() - partida) / 1000) % total;
+  cena.__seek(t);
+}
+requestAnimationFrame(passo);
+
+// O navegador só deixa o som tocar depois de um toque da pessoa. Então a cena começa muda e o som
+// liga sozinho no primeiro toque em qualquer lugar da página; o botão serve para silenciar.
+function acertaSom() {
+  const deve = querSom && naTela && !document.hidden;
+  if (deve && !comSom) {
+    som.currentTime = ((performance.now() - partida) / 1000) % (som.duration || 1e9);
+    som.play().then(() => { comSom = true; }).catch(() => {});
+  } else if (!deve && comSom) {
+    partida = performance.now() - som.currentTime * 1000;   // a cena segue de onde o som parou
+    som.pause(); comSom = false;
+  }
+  botaoSom.textContent = querSom ? 'Silenciar' : 'Ligar o som';
+  botaoSom.setAttribute('aria-pressed', String(querSom));
+}
+let tocou = false;
+const primeiroToque = e => {
+  if (tocou || botaoSom.contains(e.target)) return;
+  tocou = true; acertaSom();
+};
+addEventListener('pointerdown', primeiroToque, true);
+addEventListener('keydown', primeiroToque, true);
+botaoSom.onclick = () => { querSom = tocou ? !querSom : true; tocou = true; acertaSom(); };
+new IntersectionObserver(l => { naTela = l[0].isIntersecting; if (tocou) acertaSom(); }, { threshold: 0.25 }).observe(quadro);
+document.addEventListener('visibilitychange', () => { if (tocou) acertaSom(); });
+botaoSom.textContent = 'Ligar o som';
+</script>
+</body>
+</html>

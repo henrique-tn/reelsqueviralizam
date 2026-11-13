@@ -1,0 +1,843 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Demonstração</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* IDENTIDADE: troque pelas cores e fontes da sua conta. */
+    --fundo: #12332b;
+    --tinta: #f4efe2;
+    --destaque: #ffd166;
+    --alerta: #ef6f5e;
+    --sombra: #0b211c;
+    --pontos: rgba(244, 239, 226, .07);   /* a retícula do fundo */
+    --legenda-cor: #f4efe2;               /* letra da legenda */
+    --legenda-destaque: #ffd166;          /* palavra em destaque na legenda */
+    --legenda-contorno: #0b211c;          /* contorno da legenda: precisa contrastar com o fundo */
+    --fonte-manchete: 'Anton', 'Impact', 'Arial Narrow', sans-serif;
+    --fonte-texto: 'Inter', system-ui, 'Segoe UI', sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #0d0d0d; color: #eee; font-family: system-ui, 'Segoe UI', sans-serif; }
+  #area { position: fixed; left: 0; top: 0; overflow: hidden; }
+  #palco {
+    position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; overflow: hidden; transform-origin: 0 0;
+    background-color: var(--fundo);
+    background-image: radial-gradient(var(--pontos) 2px, transparent 2.6px);
+    background-size: 36px 36px;
+    color: var(--tinta); font-family: var(--fonte-texto);
+  }
+  #cena, #mecanismo, #guia { position: absolute; inset: 0; }
+  #mecanismo, #guia, #legenda { pointer-events: none; }
+  #cena > div { position: absolute; inset: 0; }
+  #cena *, #mecanismo * { position: absolute; }
+  #cena svg *, #mecanismo svg * { position: static; }
+  #cena span, #cena b, #cena i, #cena em, #cena strong, #cena br, #mecanismo span, #mecanismo b { position: static; }
+  #legenda {
+    position: absolute; left: 60px; width: 880px; text-align: center;
+    font-family: var(--fonte-manchete); text-transform: uppercase; line-height: 1.08; letter-spacing: .5px;
+    color: var(--legenda-cor);
+    text-shadow: 6px 0 var(--legenda-contorno), -6px 0 var(--legenda-contorno), 0 6px var(--legenda-contorno), 0 -6px var(--legenda-contorno),
+      4px 4px var(--legenda-contorno), -4px 4px var(--legenda-contorno), 4px -4px var(--legenda-contorno), -4px -4px var(--legenda-contorno), 0 12px 0 var(--legenda-contorno);
+  }
+  #legenda b { color: var(--legenda-destaque); font-weight: inherit; }
+  #guia { display: none; }
+  #guia.ligado { display: block; }
+  #guia i { position: absolute; background: rgba(239, 111, 94, .28); outline: 2px dashed rgba(239, 111, 94, .9); }
+
+  /* Painel de controle (não aparece no vídeo) */
+  #painel { position: fixed; right: 0; top: 0; bottom: 0; width: 380px; overflow: auto; padding: 18px; background: #181818; border-left: 1px solid #2a2a2a; font-size: 14px; line-height: 1.45; }
+  #painel h1 { font-size: 17px; margin: 0 0 4px; }
+  #painel h2 { font-size: 12px; margin: 20px 0 8px; color: #9a9a9a; text-transform: uppercase; letter-spacing: .08em; font-weight: 600; }
+  #painel p { margin: 6px 0; color: #bdbdbd; }
+  #painel button, #painel label.botao { font: inherit; color: #eee; background: #2b2b2b; border: 1px solid #3c3c3c; border-radius: 8px; padding: 9px 12px; cursor: pointer; display: inline-block; margin: 0 6px 6px 0; }
+  #painel button:hover, #painel label.botao:hover { background: #363636; }
+  #painel button.forte { background: #ffd166; color: #151515; border-color: #ffd166; font-weight: 700; }
+  #painel button:disabled { opacity: .4; cursor: default; }
+  #painel input[type=range] { width: 100%; }
+  #relogio { font-variant-numeric: tabular-nums; color: #9a9a9a; }
+  #frases { list-style: none; margin: 0; padding: 0; }
+  #frases li { display: grid; grid-template-columns: 26px 74px 1fr 34px; gap: 6px; align-items: center; padding: 5px 0; border-bottom: 1px solid #262626; }
+  #frases li.atual { background: #23221c; }
+  #frases input { width: 100%; font: inherit; color: #eee; background: #101010; border: 1px solid #333; border-radius: 6px; padding: 4px 6px; }
+  #frases span { color: #cfcfcf; font-size: 13px; }
+  #frases small { color: #777; }
+  #frases button { margin: 0; padding: 4px 0; }
+  #avisos { margin: 0; padding-left: 18px; }
+  #avisos li { margin: 4px 0; }
+  #avisos li.ok { color: #8fd19e; list-style: '✓  '; }
+  #avisos li.ruim { color: #ffb4a8; list-style: '✗  '; }
+  #erro { display: none; white-space: pre-wrap; background: #3a1512; color: #ffd2cb; border-radius: 8px; padding: 10px; margin-top: 10px; font-family: ui-monospace, Consolas, monospace; font-size: 12px; }
+  #cortina { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; text-align: center; background: rgba(0, 0, 0, .88); color: #fff; z-index: 10; padding: 28px; cursor: pointer; }
+  #cortina div { max-width: 560px; font-size: 22px; line-height: 1.4; }
+  #cortina strong { display: block; font-size: 30px; margin-bottom: 14px; color: #ffd166; }
+  .so-kit { display: none; }
+  body.kit .so-kit { display: block; }
+  body.kit .so-facil { display: none !important; }
+  body.gravando #painel { display: none; }
+  body.gravando { background: #000; }
+  @media (max-width: 899px) {
+    #painel { position: absolute; left: 0; right: 0; top: auto; bottom: auto; width: auto; border-left: 0; border-top: 1px solid #2a2a2a; }
+    html, body { height: auto; }
+    #area { position: relative; }
+  }
+</style>
+</head>
+<body>
+
+<div id="area">
+  <div id="palco">
+    <div id="cena"></div>
+    <div id="mecanismo"></div>
+    <div id="legenda"></div>
+    <div id="guia"></div>
+  </div>
+</div>
+
+<div id="painel">
+  <h1>Modelo de cena</h1>
+  <p>O vídeo é o retângulo colorido. Este painel não aparece na gravação.</p>
+
+  <h2>1 · Voz</h2>
+  <label class="botao so-facil">Carregar a voz (MP3)<input id="arquivo" type="file" accept="audio/*" hidden></label>
+  <p id="estado-voz">Sem voz: o exemplo toca mudo, no relógio do próprio arquivo.</p>
+
+  <h2>2 · Tempo das frases</h2>
+  <button id="marcar" class="so-facil">Marcar tempos</button>
+  <p class="so-facil">A voz toca e você toca na tela (ou aperta espaço) no instante em que cada frase <b>começa</b>. Depois ajuste nos campos abaixo.</p>
+  <p class="so-kit">Com o kit, o tempo de cada palavra vem da narração. Não há o que marcar.</p>
+  <ul id="frases"></ul>
+
+  <h2>3 · Assistir</h2>
+  <button id="tocar" class="forte">Tocar</button>
+  <button id="inicio">Voltar ao início</button>
+  <label class="botao"><input id="ver-guia" type="checkbox"> Zona segura</label>
+  <input id="barra" type="range" min="0" max="1000" value="0">
+  <div id="relogio">0,0 s</div>
+
+  <h2>4 · Conferir</h2>
+  <button id="conferir">Conferir o vídeo</button>
+  <ul id="avisos"></ul>
+
+  <div class="so-facil">
+    <h2>5 · Gravar</h2>
+    <button id="salvar">Salvar arquivo único (com voz e tempos)</button>
+    <button id="gravar" class="forte">Modo gravação</button>
+    <p>O arquivo único leva a voz e os tempos dentro dele: é o que você manda para o celular. No modo gravação o painel some e o vídeo toca do começo ao fim, para você gravar a tela.</p>
+  </div>
+  <div class="so-kit">
+    <h2>5 · Vídeo final</h2>
+    <p>Com o kit, o vídeo sai do comando de render, com trilha e efeitos. Aqui no navegador os sons tocam só para você ter uma ideia: a mistura de verdade é a do render.</p>
+  </div>
+
+  <div id="erro"></div>
+</div>
+
+<div id="cortina"><div></div></div>
+
+<!-- Só o kit (vem no Curso) cria o arquivo dados.js (o segundo exato de cada palavra, a voz e os sons).
+     Sem ele o modelo funciona do mesmo jeito: pode deixar esta linha como está. -->
+<script src="dados.js"></script>
+
+<script>
+'use strict';
+const FONTE_ORIGINAL = '<!doctype html>\n' + document.documentElement.outerHTML;
+
+const AJUSTES = {
+  legenda: { y: 1210, tamanho: 84, palavrasPorVez: 3 },  // y = altura da legenda no quadro de 1080 x 1920
+  pausaEntreFrases: 0.15,   // silêncio médio no fim de cada frase (s); entra na conta de "em que segundo cai cada palavra"
+  atrasoDoToque: 0.18,      // ao marcar tempos, a mão chega um pouco depois do ouvido (s)
+  quadroInicialParado: 1.0, // no modo gravação: segundos com o 1º quadro parado antes de a voz começar
+  fimParado: 1.3,           // segundos com o último quadro parado depois da voz
+  zonaSegura: { esquerda: 60, direita: 940, topo: 220, base: 1500 },  // fora daqui o aplicativo cobre o vídeo
+  baseDasCenas: 1150,       // texto de cena não passa daqui para baixo: de 1150 a 1400 é a faixa da legenda
+  telaParada: 3.0,          // "Conferir" avisa quando a cena fica mais do que isto (s) sem mudar nada
+};
+
+const ROTEIRO = [
+  { fala: 'Três erros estão travando o seu perfil.',                    destaque: ['Três erros', 'perfil'] },
+  { fala: 'Um: o gancho fraco, que perde a pessoa em três segundos.',   destaque: ['gancho fraco', 'três segundos'] },
+  { fala: 'Dois: o vídeo sem legenda, pra quem assiste sem som.',       destaque: ['sem legenda', 'sem som'] },
+  { fala: 'Três: postar uma vez e sumir.',                              destaque: ['sumir'] },
+  { fala: 'Arrume os três, e o perfil volta a crescer.',                destaque: ['crescer'] },
+];
+
+/*TEMPOS-INICIO*/
+const TEMPOS = [0, 2.5, 6.2, 9.6, 11.4];
+const DURACAO = 13.4;
+/*TEMPOS-FIM*/
+/*AUDIO-INICIO*/
+const AUDIO_EMBUTIDO = '';
+/*AUDIO-FIM*/
+
+// O cartão do perfil aparece no gancho e volta no pagamento: a história fecha onde começou.
+const perfil = () => `
+  <svg class="perfil" viewBox="0 0 640 500" style="left:220px; top:640px; width:640px; height:500px;">
+    <rect x="10" y="10" width="620" height="480" rx="40" fill="var(--tinta)"/>
+    <circle cx="120" cy="120" r="66" fill="var(--fundo)"/>
+    <circle cx="120" cy="100" r="24" fill="var(--tinta)"/>
+    <path d="M76 162 a44 40 0 0 1 88 0 Z" fill="var(--tinta)"/>
+    <rect x="220" y="76" width="300" height="34" rx="17" fill="var(--fundo)"/>
+    <rect x="220" y="130" width="200" height="26" rx="13" fill="var(--fundo)" opacity=".55"/>
+    <text x="60" y="262" font-family="Inter, sans-serif" font-weight="700" font-size="34" letter-spacing="6" fill="var(--fundo)">SEGUIDORES</text>
+    <rect x="60" y="430" width="520" height="12" rx="6" fill="var(--fundo)" opacity=".25"/>
+  </svg>
+  <div class="num" style="left:280px; top:912px; width:520px; font:150px/1 var(--fonte-manchete); color:var(--fundo);"></div>`;
+const etiqueta = (classe, texto, x, y, cor = 'var(--alerta)') =>
+  `<div class="${classe}" style="left:${x}px; top:${y}px; font:68px/1 var(--fonte-manchete); letter-spacing:1px; background:${cor}; color:var(--sombra); padding:14px 26px 8px; border-radius:16px; white-space:nowrap;">${texto}</div>`;
+
+const CENAS = [
+
+  /* --- Gancho: frase 0. O texto já está inteiro no primeiro quadro --- */
+  {
+    frases: [0, 0],
+    monta(el) {
+      el.innerHTML = `
+        <div style="left:60px; top:306px; width:880px; text-align:center;">
+          <div style="position:static; font:168px/1 var(--fonte-manchete); color:var(--destaque);">3 ERROS</div>
+          <div style="position:static; font:82px/1.1 var(--fonte-manchete); margin-top:10px;">QUE TRAVAM O SEU PERFIL</div>
+        </div>
+        ${perfil()}
+        ${etiqueta('trava', 'TRAVADO', 560, 1010)}`;
+    },
+    desenha(el, t) {
+      const tTrava = palavra(0, 'travando'), tPerfil = palavra(0, 'perfil');
+      // o número sobe um pouco e para: é o perfil travado
+      $(el, '.num').textContent = milhar(conta(t, 0.1, tTrava, 296, 312));
+      const treme = pulso(t, tTrava, 0.5);
+      poe($(el, '.num'), { x: 10 * Math.sin(t * 60) * treme });
+      poe($(el, '.perfil'), { escala: 1 - 0.04 * pulso(t, tPerfil, 0.4) });
+      poe($(el, '.trava'), { escala: mola(t, tTrava), opacidade: sobe(t, tTrava, 0.1), giro: -5 });
+    },
+  },
+
+  /* --- A lista: frases 1 a 3. Um erro por vez, sempre no mesmo molde (número, nome, desenho) --- */
+  {
+    frases: [1, 3],
+    monta(el) {
+      const molde = (k, nome, desenho) => `
+        <div class="item i${k}" style="inset:0;">
+          <div style="left:60px; top:292px; width:880px; text-align:center; font:700 44px var(--fonte-texto); letter-spacing:.2em; color:var(--destaque);">ERRO</div>
+          <div class="n" style="left:60px; top:340px; width:880px; text-align:center; font:236px/1 var(--fonte-manchete); color:var(--destaque);">${k + 1}</div>
+          <div class="nome" style="left:60px; top:596px; width:880px; text-align:center; font:88px/1 var(--fonte-manchete);">${nome}</div>
+          ${desenho}
+        </div>`;
+      // 1: a curva de quem continua assistindo despenca logo no começo
+      const curva = `
+        <svg class="des" viewBox="0 0 600 400" style="left:240px; top:730px; width:600px; height:400px;">
+          <path d="M50 30 V350 H570" fill="none" stroke="var(--tinta)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M62 60 C120 62 150 80 176 250 S260 318 560 330" fill="none" stroke="var(--alerta)" stroke-width="16" stroke-linecap="round"/>
+          <path d="M176 40 V350" stroke="var(--tinta)" stroke-width="6" stroke-dasharray="14 14"/>
+        </svg>
+        ${etiqueta('tag', '3 SEGUNDOS', 430, 800)}`;
+      // 2: o vídeo no celular, sem legenda e com o som desligado
+      const mudo = `
+        <svg class="des" viewBox="0 0 600 400" style="left:240px; top:730px; width:600px; height:400px;">
+          <rect x="190" y="10" width="220" height="380" rx="30" fill="var(--sombra)" stroke="var(--tinta)" stroke-width="12"/>
+          <path d="M270 150 L350 200 L270 250 Z" fill="var(--tinta)"/>
+          <rect x="222" y="318" width="156" height="22" rx="11" fill="none" stroke="var(--tinta)" stroke-width="5" stroke-dasharray="12 10"/>
+        </svg>
+        <svg class="tag" viewBox="0 0 200 160" style="left:640px; top:770px; width:230px; height:184px;">
+          <path d="M20 60 H60 L110 20 V140 L60 100 H20 Z" fill="var(--alerta)" stroke="var(--sombra)" stroke-width="10" stroke-linejoin="round"/>
+          <path d="M136 56 L184 104 M184 56 L136 104" stroke="var(--alerta)" stroke-width="18" stroke-linecap="round"/>
+        </svg>`;
+      // 3: o calendário com um post só
+      const sumiu = `
+        <svg class="des" viewBox="0 0 600 400" style="left:240px; top:740px; width:600px; height:400px;">
+          ${[0, 1].map(l => [0, 1, 2, 3, 4].map(c => {
+            const cheio = l === 0 && c === 0;
+            return `<rect x="${24 + 114 * c}" y="${30 + 130 * l}" width="96" height="108" rx="16" fill="${cheio ? 'var(--destaque)' : 'none'}" stroke="var(--tinta)" stroke-width="8" ${cheio ? '' : 'stroke-dasharray="16 14" opacity=".7"'}/>`;
+          }).join('')).join('')}
+          <path d="M52 86 l16 16 l30 -34" fill="none" stroke="var(--sombra)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        ${etiqueta('tag', 'SUMIU', 560, 1010)}`;
+      el.innerHTML = molde(0, 'GANCHO FRACO', curva) + molde(1, 'VÍDEO SEM LEGENDA', mudo) + molde(2, 'POSTAR E SUMIR', sumiu);
+    },
+    desenha(el, t) {
+      const atual = t < inicio(2) ? 0 : t < inicio(3) ? 1 : 2;
+      const marcas = [
+        { entra: inicio(1), des: palavra(1, 'gancho'), tag: palavra(1, 'três segundos') },
+        { entra: inicio(2), des: palavra(2, 'vídeo'), tag: palavra(2, 'sem som') },
+        { entra: inicio(3), des: palavra(3, 'postar'), tag: palavra(3, 'sumir') },
+      ];
+      el.querySelectorAll('.item').forEach((item, k) => {
+        item.style.opacity = k === atual ? 1 : 0;
+        if (k !== atual) return;
+        const m = marcas[k];
+        poe($(item, '.n'), { escala: mistura(0.4, 1, mola(t, m.entra, 0.4)) });
+        poe($(item, '.nome'), { y: mistura(40, 0, sobe(t, m.entra + 0.1, 0.3)), opacidade: sobe(t, m.entra + 0.1, 0.2) });
+        poe($(item, '.des'), { escala: mistura(0.7, 1, mola(t, m.des, 0.45)), opacidade: sobe(t, m.des, 0.12) });
+        poe($(item, '.tag'), { escala: mola(t, m.tag, 0.45) + 0.1 * pulso(t, m.tag + 0.55, 0.4), opacidade: sobe(t, m.tag, 0.1), giro: k === 1 ? 0 : -4 });
+      });
+    },
+  },
+
+  /* --- Pagamento: frase 4. O perfil do gancho volta e o número dispara; é o maior evento do vídeo --- */
+  {
+    frases: [4, 4],
+    monta(el) {
+      el.innerHTML = `
+        <div class="arrume" style="left:60px; top:300px; width:880px; text-align:center; font:84px/1 var(--fonte-manchete);">ARRUME OS 3</div>
+        <div class="cresce" style="left:60px; top:410px; width:880px; text-align:center; font:124px/1 var(--fonte-manchete); color:var(--destaque);">VOLTA A CRESCER</div>
+        <svg class="raios" viewBox="0 0 1080 600" style="left:0; top:600px; width:1080px; height:600px;">
+          ${[[170, 110, 110, 60], [910, 110, 970, 60], [150, 320, 80, 320], [930, 320, 1000, 320]]
+            .map(([x1, y1, x2, y2]) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--destaque)" stroke-width="14" stroke-linecap="round"/>`).join('')}
+        </svg>
+        ${perfil()}
+        <div class="barra" style="left:280px; top:1070px; width:520px; height:12px; border-radius:6px; background:var(--destaque); transform-origin:left;"></div>
+        <svg class="seta" viewBox="0 0 120 140" style="left:690px; top:880px; width:120px; height:140px;">
+          <path d="M60 8 L112 70 H80 V132 H40 V70 H8 Z" fill="var(--destaque)" stroke="var(--sombra)" stroke-width="8" stroke-linejoin="round"/>
+        </svg>`;
+    },
+    desenha(el, t) {
+      const tVolta = palavra(4, 'o perfil'), tCresce = palavra(4, 'crescer'), fimConta = tCresce + 0.6;
+      poe($(el, '.arrume'), { escala: mistura(0.8, 1, mola(t, inicio(4), 0.4)) });
+      poe($(el, '.cresce'), { escala: mola(t, tCresce, 0.55) + 0.08 * pulso(t, fimConta, 0.45), opacidade: sobe(t, tCresce, 0.1) });
+      const num = $(el, '.num');
+      num.textContent = milhar(conta(t, tVolta, fimConta, 312, 12480));
+      num.style.color = t >= tCresce ? 'var(--sombra)' : 'var(--fundo)';
+      poe(num, { escala: 1 + 0.1 * pulso(t, fimConta, 0.4) });
+      $(el, '.barra').style.transform = `scaleX(${sobe(t, tVolta, fimConta - tVolta)})`;
+      poe($(el, '.seta'), { y: mistura(60, 0, mola(t, tCresce, 0.5)), opacidade: sobe(t, tCresce, 0.1) });
+      poe($(el, '.raios'), { escala: mistura(0.7, 1, mola(t, tCresce + 0.2, 0.5)), opacidade: sobe(t, tCresce + 0.2, 0.15) });
+    },
+  },
+];
+
+const MECANISMO = {
+  monta(el) {
+    el.innerHTML = `
+      <div class="conta" style="left:640px; top:236px; width:150px; text-align:right; font:700 34px/52px var(--fonte-texto); letter-spacing:.08em;"></div>
+      ${[0, 1, 2].map(k => `<div class="ponto" style="left:${810 + 46 * k}px; top:244px; width:36px; height:36px; border-radius:50%; border:6px solid var(--tinta);"></div>`).join('')}`;
+  },
+  desenha(el, t) {
+    const degraus = [inicio(1), inicio(2), inicio(3)];   // um ponto acende a cada erro
+    const feitos = degraus.filter(d => t >= d).length;
+    $(el, '.conta').textContent = feitos + ' DE 3';
+    el.querySelectorAll('.ponto').forEach((ponto, k) => {
+      const aceso = t >= degraus[k];
+      ponto.style.background = aceso ? 'var(--destaque)' : 'transparent';
+      ponto.style.borderColor = aceso ? 'var(--destaque)' : 'var(--tinta)';
+      poe(ponto, { escala: 1 + 0.5 * pulso(t, degraus[k], 0.4) });
+    });
+  },
+};
+
+const SONS = {
+  trilha: { arquivo: 'calma', volume: 1 },   // nome de um arquivo de sons/trilhas do kit; null = sem trilha
+  efeitos: [
+    { som: 'falha', frase: 0, em: 'travando' },
+    { som: 'pop', frase: 1, em: 'Um' },
+    { som: 'pop', frase: 2, em: 'Dois' },
+    { som: 'pop', frase: 3, em: 'Três' },
+    { som: 'whoosh-longo', frase: 4, em: 'o perfil' },
+    { som: 'ding', frase: 4, em: 'crescer' },
+  ],
+};
+
+const el = id => document.getElementById(id);
+const palco = el('palco'), camadaCena = el('cena'), camadaMec = el('mecanismo'), camadaLeg = el('legenda');
+const audio = new Audio();
+audio.preload = 'auto';
+
+// Com o kit, dados.js entrega a voz, o segundo exato de cada palavra e a pasta dos sons.
+const KIT = (typeof window.KIT === 'object' && window.KIT) || null;
+// O comando de render do kit abre a página com ?render: sem painel, sem som, quadro em tamanho cheio.
+const RENDER = new URLSearchParams(location.search).has('render');
+
+let tempos = TEMPOS.slice();
+let duracaoSemVoz = DURACAO;
+let temVoz = false, chaveVoz = '', blobVoz = null;
+let tocando = false, relogioBase = 0, relogioT = 0;   // relógio interno, usado quando não há voz
+let marcando = -1, gravando = false, fimEm = null;
+
+/* ---------- ajudas das cenas ---------- */
+const limita = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+const mistura = (a, b, p) => a + (b - a) * p;
+const sobe = (t, t0, dur = 0.4) => 1 - Math.pow(1 - limita((t - t0) / Math.max(dur, 0.001)), 3);
+function mola(t, t0, dur = 0.5) {
+  const p = limita((t - t0) / Math.max(dur, 0.001));
+  if (p <= 0) return 0;
+  if (p >= 1) return 1;
+  const c1 = 1.70158, c3 = c1 + 1;
+  return 1 + c3 * Math.pow(p - 1, 3) + c1 * Math.pow(p - 1, 2);
+}
+function pulso(t, t0, dur = 0.35) {
+  const p = (t - t0) / Math.max(dur, 0.001);
+  return p <= 0 || p >= 1 ? 0 : Math.sin(Math.PI * p);
+}
+const conta = (t, t0, t1, de, para) => Math.round(mistura(de, para, sobe(t, t0, t1 - t0)));
+const milhar = n => Number(n).toLocaleString('pt-BR');
+const $ = (raiz, seletor) => raiz.querySelector(seletor);
+function poe(alvo, { x = 0, y = 0, escala = 1, giro = 0, opacidade = 1 } = {}) {
+  if (!alvo) return;
+  alvo.style.transform = `translate(${x}px, ${y}px) rotate(${giro}deg) scale(${escala})`;
+  alvo.style.opacity = opacidade;
+}
+const semAcento = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+const total = () => (KIT && KIT.duracao > 0 ? KIT.duracao : temVoz && isFinite(audio.duration) ? audio.duration : duracaoSemVoz);
+const inicio = i => tempos[limita(i, 0, ROTEIRO.length - 1)] ?? 0;
+const fim = i => (i + 1 < ROTEIRO.length ? inicio(i + 1) : total());
+const faltas = new Set();
+const falaDe = i => (ROTEIRO[i]?.fala ?? '').trim();
+
+// Tempo exato (kit): EXATO[i][n] é o segundo em que começa a palavra n da frase i.
+// Sem o kit fica null, e o instante de cada palavra é estimado pela posição dela no texto.
+let erroKit = '';
+const EXATO = (() => {
+  if (!KIT || !Array.isArray(KIT.palavras)) return null;
+  const soLetras = s => semAcento(String(s)).replace(/[^a-z0-9]/g, '');
+  const linhas = [];
+  let n = 0, pista = '';
+  ROTEIRO.forEach((_, i) => {
+    const daCena = falaDe(i).split(/\s+/);
+    const daVoz = KIT.palavras.slice(n, n + daCena.length);
+    if (!pista) {
+      const k = daCena.findIndex((p, j) => !daVoz[j] || soLetras(p) !== soLetras(daVoz[j][0]));
+      if (k >= 0) pista = `frase ${i}: a cena diz “${daCena[k]}” e a narração diz “${daVoz[k] ? daVoz[k][0] : '(acabou)'}”`;
+    }
+    linhas.push(daVoz.map(p => p[1]));
+    n += daCena.length;
+  });
+  if (n !== KIT.palavras.length) {
+    erroKit = `O ROTEIRO da cena tem ${n} palavras e a narração tem ${KIT.palavras.length}. Primeira diferença: ${pista || 'no fim do texto'}. ` +
+      'Deixe o ROTEIRO igual ao roteiro.txt (as mesmas frases, na mesma ordem) ou gere a voz de novo.';
+    return null;
+  }
+  return linhas;
+})();
+if (EXATO) tempos = EXATO.map((linha, i) => (i === 0 ? 0 : linha[0]));
+if (KIT && KIT.duracao > 0) duracaoSemVoz = KIT.duracao;
+
+function palavra(i, trecho, ajuste = 0) {
+  const fala = semAcento(falaDe(i));
+  const k = fala.indexOf(semAcento(trecho));
+  if (k < 0) { faltas.add(`frase ${i}: não achei "${trecho}" na fala`); return inicio(i); }
+  // com o kit: o começo exato da palavra em que o trecho começa
+  if (EXATO) return EXATO[i][(fala.slice(0, k).match(/\s+/g) ?? []).length] + ajuste;
+  const falado = Math.max(0.2, fim(i) - inicio(i) - AJUSTES.pausaEntreFrases);
+  return inicio(i) + falado * (k / fala.length) + ajuste;
+}
+
+/* ---------- legenda ---------- */
+function blocosDaFrase(i) {
+  const fala = falaDe(i), palavras = fala.split(/\s+/), blocos = [];
+  let atual = [], pos = 0, comeco = 0, primeira = 0;
+  palavras.forEach((p, n) => {
+    if (!atual.length) { comeco = pos; primeira = n; }
+    atual.push(p);
+    pos += p.length + 1;
+    const fecha = atual.length >= AJUSTES.legenda.palavrasPorVez || /[.,:;?!…]$/.test(p) || n === palavras.length - 1;
+    if (fecha) { blocos.push({ texto: atual.join(' '), em: comeco / fala.length, n0: primeira }); atual = []; }
+  });
+  // bloco de uma palavra só no fim da frase junta com o anterior
+  if (blocos.length > 1 && !/\s/.test(blocos.at(-1).texto) && blocos.at(-2).texto.split(' ').length <= AJUSTES.legenda.palavrasPorVez) {
+    const ultimo = blocos.pop();
+    blocos.at(-1).texto += ' ' + ultimo.texto;
+  }
+  return blocos;
+}
+const BLOCOS = ROTEIRO.map((_, i) => blocosDaFrase(i));
+function marcaDestaque(i, texto) {
+  const alvos = new Set((ROTEIRO[i].destaque ?? []).flatMap(d => semAcento(d).split(/\s+/)));
+  return texto.split(' ').map(p => {
+    const limpa = semAcento(p).replace(/[^a-z0-9]/g, '');
+    const seguro = p.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+    return alvos.has(limpa) ? `<b>${seguro}</b>` : seguro;
+  }).join(' ');
+}
+let legendaAtual = '';
+function desenhaLegenda(t) {
+  const i = fraseEm(t);
+  const falado = Math.max(0.2, fim(i) - inicio(i) - AJUSTES.pausaEntreFrases);
+  const p = (t - inicio(i)) / falado;
+  let bloco = BLOCOS[i][0];
+  for (const b of BLOCOS[i]) if (EXATO ? t >= EXATO[i][b.n0] : p >= b.em) bloco = b;
+  const chave = i + '|' + bloco.texto;
+  if (chave !== legendaAtual) { legendaAtual = chave; camadaLeg.innerHTML = marcaDestaque(i, bloco.texto); }
+}
+
+/* ---------- quadro ---------- */
+function fraseEm(t) {
+  let i = 0;
+  for (let k = 0; k < ROTEIRO.length; k++) if (t >= inicio(k)) i = k;
+  return i;
+}
+let cenaAtual = -1, mecMontado = false;
+const errosDeCena = [];
+function mostraErro(onde, e) {
+  const texto = `Erro ${onde}:\n${e && e.message ? e.message : e}`;
+  if (!errosDeCena.includes(texto)) errosDeCena.push(texto);
+  el('erro').style.display = 'block';
+  el('erro').textContent = `${texto}\n\nCopie esta mensagem e mande para a IA que fez as cenas.`;
+}
+function desenha(t) {
+  t = limita(t, 0, total());
+  const i = fraseEm(t);
+  const n = CENAS.findIndex(c => i >= c.frases[0] && i <= c.frases[1]);
+  try {
+    if (n !== cenaAtual) {
+      cenaAtual = n;
+      camadaCena.innerHTML = '';
+      if (n >= 0) { const caixa = document.createElement('div'); camadaCena.appendChild(caixa); CENAS[n].monta(caixa); }
+    }
+    if (n >= 0) CENAS[n].desenha(camadaCena.firstElementChild, t);
+  } catch (e) { mostraErro(`na cena ${n} (frase ${i})`, e); }
+  try {
+    if (typeof MECANISMO === 'object' && MECANISMO && MECANISMO.monta) {
+      if (!mecMontado) { MECANISMO.monta(camadaMec); mecMontado = true; }
+      MECANISMO.desenha(camadaMec, t);
+    }
+  } catch (e) { mostraErro('no mecanismo', e); }
+  desenhaLegenda(t);
+  el('relogio').textContent = `${t.toFixed(1).replace('.', ',')} s de ${total().toFixed(1).replace('.', ',')} s · frase ${i}`;
+  if (document.activeElement !== el('barra')) el('barra').value = Math.round(1000 * t / Math.max(total(), 0.01));
+  document.querySelectorAll('#frases li').forEach((li, k) => li.classList.toggle('atual', k === i));
+}
+window.__seek = desenha;   // o mesmo t dá sempre o mesmo quadro
+
+/* ---------- relógio ---------- */
+const agora = () => (temVoz ? audio.currentTime : (tocando ? relogioT + (performance.now() - relogioBase) / 1000 : relogioT));
+function vaiPara(t) {
+  t = limita(t, 0, total());
+  if (temVoz) audio.currentTime = t;
+  relogioT = t; relogioBase = performance.now();
+  fimEm = null;
+  acertaSons(t);
+  desenha(t);
+}
+function toca() {
+  if (agora() >= total() - 0.05) vaiPara(0);
+  tocando = true; relogioBase = performance.now(); fimEm = null;
+  acertaSons(agora() - 0.001);
+  tocadores.trilha?.play().catch(() => {});
+  if (temVoz) audio.play().catch(() => { pausa(); el('estado-voz').textContent = 'O navegador bloqueou o som. Toque em "Tocar" de novo.'; });
+  el('tocar').textContent = 'Pausar';
+  requestAnimationFrame(passo);
+}
+function pausa() {
+  relogioT = agora(); tocando = false;
+  if (temVoz) audio.pause();
+  tocadores.trilha?.pause();
+  el('tocar').textContent = 'Tocar';
+}
+function passo() {
+  if (!tocando) return;
+  const t = agora();
+  desenha(t);
+  tocaSons(t);
+  if (t >= total() - 0.02) {
+    // último quadro parado por um instante, depois encerra
+    fimEm ??= performance.now();
+    if ((performance.now() - fimEm) / 1000 >= AJUSTES.fimParado) { pausa(); relogioT = total(); if (gravando) fimDaGravacao(); return; }
+  }
+  requestAnimationFrame(passo);
+}
+
+/* ---------- tamanho do palco ---------- */
+function ajusta() {
+  const estreito = innerWidth < 900 && !gravando;
+  const larguraPainel = gravando || estreito ? 0 : 380;
+  const w = innerWidth - larguraPainel, h = estreito ? Math.round(innerHeight * 0.62) : innerHeight;
+  const escala = Math.min(w / 1080, h / 1920);
+  const area = el('area');
+  area.style.width = w + 'px'; area.style.height = h + 'px';
+  palco.style.transform = `translate(${(w - 1080 * escala) / 2}px, ${(h - 1920 * escala) / 2}px) scale(${escala})`;
+  camadaLeg.style.top = AJUSTES.legenda.y + 'px';
+  camadaLeg.style.fontSize = AJUSTES.legenda.tamanho + 'px';
+}
+addEventListener('resize', ajusta);
+
+/* ---------- zona segura ---------- */
+(function montaGuia() {
+  const z = AJUSTES.zonaSegura;
+  el('guia').innerHTML =
+    `<i style="left:0;top:0;width:1080px;height:${z.topo}px"></i>` +
+    `<i style="left:0;top:${z.base}px;width:1080px;height:${1920 - z.base}px"></i>` +
+    `<i style="left:${z.direita}px;top:${z.topo}px;width:${1080 - z.direita}px;height:${z.base - z.topo}px"></i>` +
+    `<i style="left:0;top:${z.topo}px;width:${z.esquerda}px;height:${z.base - z.topo}px"></i>`;
+})();
+el('ver-guia').onchange = e => el('guia').classList.toggle('ligado', e.target.checked);
+
+/* ---------- voz ---------- */
+const chaveTempos = () => `modelo-de-cena:tempos:${ROTEIRO.length}:${chaveVoz}`;
+function guardaTempos() { if (EXATO) return; try { localStorage.setItem(chaveTempos(), JSON.stringify(tempos)); } catch {} }
+function usaVoz(blob, chave) {
+  blobVoz = blob; chaveVoz = chave;
+  audio.src = URL.createObjectURL(blob);
+  audio.onloadedmetadata = () => {
+    temVoz = true;
+    try {
+      const salvo = JSON.parse(localStorage.getItem(chaveTempos()) || 'null');
+      if (!EXATO && Array.isArray(salvo) && salvo.length === ROTEIRO.length) tempos = salvo;
+    } catch {}
+    el('estado-voz').textContent = `Voz carregada: ${audio.duration.toFixed(1).replace('.', ',')} s.`;
+    listaFrases(); vaiPara(0);
+  };
+  audio.onerror = () => { el('estado-voz').textContent = 'Não consegui abrir esse arquivo de áudio.'; };
+}
+el('arquivo').onchange = e => {
+  const f = e.target.files[0];
+  if (f) usaVoz(f, `${f.size}`);
+};
+async function vozEmbutida() {
+  if (!AUDIO_EMBUTIDO) return;
+  const blob = await (await fetch(AUDIO_EMBUTIDO)).blob();
+  usaVoz(blob, `${blob.size}`);
+}
+function vozDoKit() {
+  chaveVoz = 'kit';
+  audio.src = KIT.voz;
+  audio.onloadedmetadata = () => {
+    temVoz = true;
+    el('estado-voz').textContent = `Voz do kit: ${total().toFixed(1).replace('.', ',')} s` + (EXATO ? ', com o tempo exato de cada palavra.' : ', com os tempos marcados no arquivo.');
+    listaFrases(); vaiPara(0);
+  };
+  audio.onerror = () => { el('estado-voz').textContent = `Não achei a voz (${KIT.voz}) ao lado deste arquivo.`; };
+}
+
+/* ---------- sons: trilha e efeitos (só com o kit) ---------- */
+function sonsResolvidos() {
+  const s = (typeof SONS === 'object' && SONS) || {};
+  const efeitos = (Array.isArray(s.efeitos) ? s.efeitos : []).map(e => {
+    if (!(e.frase >= 0 && e.frase < ROTEIRO.length)) { faltas.add(`som "${e.som}": a frase ${e.frase} não existe`); return null; }
+    const t = (e.em ? palavra(e.frase, e.em) : inicio(e.frase)) + (e.ajuste ?? 0);
+    return { som: String(e.som), t: +Math.max(0, t).toFixed(3), volume: e.volume ?? 1 };
+  }).filter(Boolean).sort((a, b) => a.t - b.t);
+  const trilha = s.trilha && s.trilha.arquivo ? { arquivo: String(s.trilha.arquivo), volume: s.trilha.volume ?? 1 } : null;
+  return { trilha, efeitos };
+}
+window.__sons = sonsResolvidos;
+// No navegador os sons tocam só como prévia; quem mistura de verdade é o render do kit.
+const tocadores = { efeitos: [], trilha: null, ultimo: 0 };
+function preparaSons() {
+  if (!KIT || !KIT.sons || RENDER) return;
+  const { trilha, efeitos } = sonsResolvidos();
+  tocadores.efeitos = efeitos.map(e => {
+    const a = new Audio(`${KIT.sons}/efeitos/${e.som}.mp3`);
+    a.preload = 'auto'; a.volume = limita(0.5 * e.volume);
+    return { t: e.t, a };
+  });
+  if (trilha) {
+    const a = new Audio(`${KIT.sons}/trilhas/${trilha.arquivo}.mp3`);
+    a.loop = true; a.volume = limita(0.1 * trilha.volume);
+    tocadores.trilha = a;
+  }
+}
+function acertaSons(t) {
+  tocadores.ultimo = t;
+  const a = tocadores.trilha;
+  if (a && isFinite(a.duration) && a.duration > 0) a.currentTime = Math.max(0, t) % a.duration;
+}
+function tocaSons(t) {
+  for (const e of tocadores.efeitos) if (e.t > tocadores.ultimo && e.t <= t) { e.a.currentTime = 0; e.a.play().catch(() => {}); }
+  tocadores.ultimo = t;
+}
+
+/* ---------- lista de frases e marcação de tempos ---------- */
+function listaFrases() {
+  el('frases').innerHTML = ROTEIRO.map((f, i) =>
+    `<li><small>${i}</small><input type="number" step="0.05" min="0" value="${(tempos[i] ?? 0).toFixed(2)}" data-i="${i}"${EXATO ? ' disabled' : ''}>` +
+    `<span>${f.fala.replace(/</g, '&lt;')}</span><button data-ouvir="${i}" title="Ouvir a partir daqui">▶</button></li>`).join('');
+}
+el('frases').addEventListener('change', e => {
+  const i = +e.target.dataset.i;
+  if (Number.isNaN(i)) return;
+  tempos[i] = Math.max(0, +e.target.value || 0);
+  guardaTempos(); desenha(agora());
+});
+el('frases').addEventListener('click', e => {
+  const i = e.target.dataset.ouvir;
+  if (i === undefined) return;
+  vaiPara(Math.max(0, inicio(+i) - 0.4)); toca();
+});
+function cortina(titulo, texto, aoTocar) {
+  const c = el('cortina');
+  if (!titulo) { c.style.display = 'none'; c.onclick = null; return; }
+  c.firstElementChild.innerHTML = `<strong>${titulo}</strong>${texto}`;
+  c.style.display = 'flex';
+  c.onclick = aoTocar;
+}
+function comecaMarcar() {
+  if (!temVoz) { alert('Carregue a voz primeiro.'); return; }
+  pausa(); vaiPara(0);
+  tempos = ROTEIRO.map(() => 0);
+  marcando = 1;
+  const proxima = () => marcando < ROTEIRO.length
+    ? cortina(`Toque quando esta frase COMEÇAR (${marcando} de ${ROTEIRO.length - 1})`, `“${ROTEIRO[marcando].fala}”`, toque)
+    : terminaMarcar();
+  function toque() {
+    tempos[marcando] = +Math.max(tempos[marcando - 1] + 0.2, audio.currentTime - AJUSTES.atrasoDoToque).toFixed(2);
+    marcando++;
+    proxima();
+  }
+  comecaMarcar.toque = toque;
+  cortina('Marcar tempos', 'A voz vai tocar do começo. A primeira frase já conta como marcada.<br><br>Toque aqui para começar.', () => { proxima(); toca(); });
+}
+function terminaMarcar() {
+  marcando = -1; comecaMarcar.toque = null;
+  cortina();
+  guardaTempos(); listaFrases();
+  pausa(); vaiPara(0);
+}
+el('marcar').onclick = comecaMarcar;
+
+/* ---------- conferir ---------- */
+function retangulo(alvo) {
+  const p = palco.getBoundingClientRect(), r = alvo.getBoundingClientRect(), k = 1080 / p.width;
+  return { x0: (r.left - p.left) * k, y0: (r.top - p.top) * k, x1: (r.right - p.left) * k, y1: (r.bottom - p.top) * k };
+}
+function escondido(n) {
+  for (let a = n; a && a !== palco; a = a.parentElement) if (+getComputedStyle(a).opacity < 0.1) return true;
+  return false;
+}
+function confere() {
+  const tAntes = agora(), z = AJUSTES.zonaSegura, ruins = [], bons = [];
+  pausa(); faltas.clear();
+  const nota = (ok, texto) => (ok ? bons : ruins).push(texto);
+
+  nota(tempos.length === ROTEIRO.length && tempos.every((v, i) => i === 0 || v > tempos[i - 1]),
+    'Tempo de cada frase marcado, em ordem crescente');
+  if (temVoz) nota(tempos.at(-1) < audio.duration, 'A última frase começa antes de a voz acabar');
+  const semCena = ROTEIRO.map((_, i) => i).filter(i => !CENAS.some(c => i >= c.frases[0] && i <= c.frases[1]));
+  nota(!semCena.length, semCena.length ? `Frases sem cena: ${semCena.join(', ')}` : 'Toda frase tem cena');
+
+  // primeiro quadro: o gancho já está escrito
+  desenha(0);
+  const textoZero = camadaCena.innerText.replace(/\s+/g, ' ').trim();
+  nota(textoZero.length >= 6, textoZero.length >= 6 ? `Primeiro quadro já mostra texto: “${textoZero.slice(0, 40)}”` : 'O primeiro quadro não tem o gancho por escrito');
+
+  // legenda: cabe em duas linhas, dentro da zona segura, em todos os blocos
+  const legRuins = [];
+  ROTEIRO.forEach((_, i) => BLOCOS[i].forEach(b => {
+    camadaLeg.innerHTML = marcaDestaque(i, b.texto);
+    const r = retangulo(camadaLeg), linhas = Math.round((r.y1 - r.y0) / (AJUSTES.legenda.tamanho * 1.08));
+    if (linhas > 2 || r.y1 > z.base || camadaLeg.scrollWidth > camadaLeg.clientWidth + 1) legRuins.push(`frase ${i}: “${b.texto}”`);
+  }));
+  legendaAtual = '';
+  nota(!legRuins.length, legRuins.length ? `Legenda grande demais em: ${legRuins.join('; ')}` : 'Legenda cabe em até duas linhas, dentro da zona segura');
+
+  // texto das cenas dentro da zona segura, medido perto do fim de cada frase
+  const fora = [];
+  ROTEIRO.forEach((_, i) => {
+    desenha(inicio(i) + 0.85 * (fim(i) - inicio(i)));
+    [...camadaCena.querySelectorAll('*'), ...camadaMec.querySelectorAll('*')].forEach(n => {
+      const textos = [...n.childNodes].filter(c => c.nodeType === 3 && c.textContent.trim());
+      if (!textos.length || escondido(n)) return;
+      const faixa = document.createRange();
+      faixa.setStartBefore(textos[0]); faixa.setEndAfter(textos.at(-1));
+      const r = retangulo(faixa);
+      if (r.x1 - r.x0 < 2) return;
+      const base = camadaCena.contains(n) ? AJUSTES.baseDasCenas : z.base;
+      if (r.x0 < z.esquerda - 1 || r.x1 > z.direita + 1 || r.y0 < z.topo - 1 || r.y1 > base + 1)
+        fora.push(`frase ${i}: “${n.textContent.trim().slice(0, 24)}”`);
+    });
+  });
+  nota(!fora.length, fora.length ? `Texto fora da zona segura ou em cima da legenda em: ${[...new Set(fora)].join('; ')}` : 'Nenhum texto das cenas fora da zona segura nem em cima da legenda');
+
+  // tela parada: trechos longos em que nada muda na cena
+  const parados = [];
+  let ultimo = '', desde = 0;
+  for (let t = 0; t <= total() + 0.001; t += 0.2) {
+    desenha(t);
+    const agoraTela = camadaCena.innerHTML;
+    if (agoraTela !== ultimo) {
+      if (t - desde > AJUSTES.telaParada) parados.push(`${desde.toFixed(1)} s a ${t.toFixed(1)} s (frase ${fraseEm(desde)})`);
+      ultimo = agoraTela; desde = t;
+    }
+  }
+  if (total() - desde > AJUSTES.telaParada + AJUSTES.fimParado) parados.push(`${desde.toFixed(1)} s até o fim`);
+  nota(!parados.length, parados.length ? `Cena parada por mais de ${AJUSTES.telaParada} s: ${parados.join('; ')}` : `Nenhum trecho com a cena parada por mais de ${AJUSTES.telaParada} s`);
+  if (KIT) {
+    sonsResolvidos();   // as âncoras dos sons entram na mesma conferência das âncoras das cenas
+    if (Array.isArray(KIT.palavras)) nota(!!EXATO, EXATO ? 'O ROTEIRO da cena bate com a narração, palavra por palavra' : erroKit);
+  }
+  nota(!faltas.size, faltas.size ? `Palavra-âncora que não existe na fala: ${[...faltas].join('; ')}` : 'Toda palavra-âncora existe na fala');
+  nota(!errosDeCena.some(e => !e.startsWith('Erro no kit')), 'Nenhuma cena deu erro');
+
+  el('avisos').innerHTML = ruins.map(t => `<li class="ruim">${t}</li>`).join('') + bons.map(t => `<li class="ok">${t}</li>`).join('');
+  vaiPara(tAntes);
+  return { ruins, bons };
+}
+el('conferir').onclick = confere;
+window.__conferir = confere;
+
+/* ---------- salvar arquivo único ---------- */
+const emDataUrl = blob => new Promise((ok, erro) => { const l = new FileReader(); l.onload = () => ok(l.result); l.onerror = erro; l.readAsDataURL(blob); });
+async function montaArquivo() {
+  const m = (nome, ponta) => '/*' + nome + '-' + ponta + '*/';
+  const troca = (fonte, nome, miolo) => {
+    const a = fonte.indexOf(m(nome, 'INICIO')), b = fonte.indexOf(m(nome, 'FIM'));
+    if (a < 0 || b < 0) throw new Error(`Não achei o bloco ${nome} no arquivo.`);
+    return fonte.slice(0, a) + m(nome, 'INICIO') + '\n' + miolo + '\n' + fonte.slice(b);
+  };
+  let fonte = FONTE_ORIGINAL;
+  fonte = troca(fonte, 'TEMPOS', `const TEMPOS = ${JSON.stringify(tempos)};\nconst DURACAO = ${+total().toFixed(2)};`);
+  const dados = blobVoz ? await emDataUrl(blobVoz) : AUDIO_EMBUTIDO;
+  fonte = troca(fonte, 'AUDIO', `const AUDIO_EMBUTIDO = ${JSON.stringify(dados)};`);
+  return fonte;
+}
+el('salvar').onclick = async () => {
+  try {
+    const blob = new Blob([await montaArquivo()], { type: 'text/html' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = 'meu-video.html';
+    document.body.appendChild(a); a.click(); a.remove();
+  } catch (e) { mostraErro('ao salvar', e); }
+};
+window.__montaArquivo = montaArquivo;
+
+/* ---------- modo gravação ---------- */
+function entraGravacao() {
+  pausa(); gravando = true;
+  document.body.classList.add('gravando');
+  document.documentElement.requestFullscreen?.().catch(() => {});
+  setTimeout(() => { ajusta(); vaiPara(0); }, 150);
+  cortina('Modo gravação', '1. Comece a gravar a tela do aparelho.<br>2. Toque aqui.<br><br>O primeiro quadro fica parado um instante antes de a voz começar, e o último fica parado no fim. Depois é só cortar as pontas.', () => {
+    cortina(); vaiPara(0);
+    setTimeout(toca, 1000 * AJUSTES.quadroInicialParado);
+  });
+}
+function fimDaGravacao() {
+  setTimeout(() => cortina('Fim', 'Pare a gravação da tela.<br><br>Toque para sair.', saiGravacao), 1500);
+}
+function saiGravacao() {
+  cortina(); gravando = false;
+  document.body.classList.remove('gravando');
+  if (document.fullscreenElement) document.exitFullscreen?.();
+  setTimeout(ajusta, 150);
+}
+el('gravar').onclick = entraGravacao;
+document.addEventListener('fullscreenchange', () => setTimeout(ajusta, 60));
+
+/* ---------- botões e teclado ---------- */
+el('tocar').onclick = () => (tocando ? pausa() : toca());
+el('inicio').onclick = () => { pausa(); vaiPara(0); };
+el('barra').oninput = e => { pausa(); vaiPara(total() * e.target.value / 1000); };
+addEventListener('keydown', e => {
+  if (e.code !== 'Space' || /INPUT|TEXTAREA/.test(document.activeElement?.tagName ?? '')) return;
+  e.preventDefault();
+  if (marcando > 0 && comecaMarcar.toque && tocando) comecaMarcar.toque();
+  else if (el('cortina').style.display !== 'flex') (tocando ? pausa() : toca());
+});
+
+/* ---------- partida ---------- */
+window.__duracao = total;
+window.__frase = fraseEm;
+window.__erros = () => errosDeCena.slice();
+if (KIT) document.body.classList.add('kit');
+if (RENDER) { gravando = true; document.body.classList.add('gravando'); }
+if (erroKit) mostraErro('no kit', erroKit);
+ajusta(); listaFrases(); desenha(0);
+document.fonts?.ready.then(() => desenha(agora()));
+if (!RENDER) {
+  if (KIT && KIT.voz) vozDoKit(); else vozEmbutida();
+  preparaSons();
+}
+</script>
+</body>
+</html>
