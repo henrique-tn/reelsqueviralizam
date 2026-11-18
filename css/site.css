@@ -1,0 +1,1757 @@
+/* Reels que Viralizam: página de venda.
+   O site tem cara de editor de vídeo (escuro, linhas finas, verde-lima no que está ativo);
+   o reel, dentro dele, tem as cores da cena que o kit entrega. Celular primeiro: as regras sem @media valem para 375 px. */
+
+/* ---------- paleta, letras e medidas ---------- */
+
+:root {
+  /* o editor */
+  --fundo: #0a0a0b;
+  --painel: #131315;
+  --painel-2: #1c1c1f;
+  --linha: #2a2a2e;
+  --linha-forte: #3a3a40;
+  --texto: #f4f4f5;
+  --texto-suave: #c8c8ce;
+  --apagado: #8d8d94;
+  --lima: #d7ff3d;
+  --lima-claro: #e4ff7a;
+  --sobre-lima: #0a0a0b;
+  --rec: #ff4b3e;
+  --voz: #5fd4c0;
+  --som: #ff9a3d;
+  /* o reel dentro do site (cenas em código, capas, parede de efeitos): a paleta da cena
+     que o kit entrega de verdade, a de pagina/demo/cena.html */
+  --reel-fundo: #12332b;
+  --reel-tinta: #f4efe2;
+  --reel-destaque: #ffd166;
+  --reel-alerta: #ef6f5e;
+  --reel-sombra: #0b211c;
+  --reel-manchete: 'Anton', 'Arial Narrow', sans-serif;
+  --reel-texto: 'Inter', system-ui, 'Segoe UI', sans-serif;
+
+  --fonte: 'Inter Tight', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Consolas, monospace;
+
+  --largura: 1200px;           /* largura do conteúdo */
+  --margem: 20px;              /* respiro nas laterais */
+  --secao: 64px;               /* respiro em cima e embaixo de cada seção (celular) */
+  --raio: 14px;
+  --raio-botao: 12px;
+  --curva: cubic-bezier(.16, 1, .3, 1);   /* saída exponencial */
+}
+@media (min-width: 640px) {
+  :root { --margem: 32px; --secao: 112px; }
+}
+@media (min-width: 1024px) {
+  :root { --margem: 56px; --secao: 136px; }
+}
+
+/* ---------- base ---------- */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  color-scheme: dark;
+  scroll-behavior: smooth;
+  scrollbar-color: var(--linha-forte) var(--fundo);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--fundo);
+  color: var(--texto);
+  font: 400 1.0625rem/1.55 var(--fonte);
+  caret-color: var(--lima);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+[hidden] { display: none !important; }
+
+img, video { display: block; max-width: 100%; }
+
+a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: .22em; }
+
+::selection { background: var(--lima); color: var(--sobre-lima); }
+
+:focus-visible { outline: 2px solid var(--lima); outline-offset: 3px; }
+[tabindex="-1"]:focus:not(:focus-visible) { outline: none; }
+
+button { font: inherit; color: inherit; }
+
+/* só para leitor de tela */
+.so-leitor {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* ---------- letras ---------- */
+
+h1, h2, h3 { margin: 0; color: var(--texto); font-family: var(--fonte); text-wrap: balance; }
+h1, h2 { word-spacing: .06em; }
+
+h1 {
+  font-weight: 900;
+  font-size: clamp(2.625rem, 1.5rem + 4.6vw, 4.5rem);
+  line-height: .98;
+  letter-spacing: -.035em;
+}
+
+h2 {
+  font-weight: 800;
+  font-size: clamp(2.125rem, 1.45rem + 2.8vw, 3.5rem);
+  line-height: 1.03;
+  letter-spacing: -.03em;
+}
+
+h3 { font-weight: 700; font-size: 1.25rem; line-height: 1.25; letter-spacing: -.01em; }
+
+h1 em, h2 em { font-style: normal; color: var(--lima); }
+
+/* um verso por linha num título: a quebra cai entre as frases, não no meio delas */
+h1 .verso, h2 .verso { display: block; }
+
+p { margin: 0; text-wrap: pretty; }
+li { text-wrap: pretty; }
+
+.sub {
+  margin-top: 18px;
+  max-width: 40ch;
+  color: var(--texto-suave);
+  font-size: clamp(1.0625rem, 1rem + .3vw, 1.25rem);
+  line-height: 1.5;
+}
+
+.lima { color: var(--lima); }
+
+/* preço e contagem nunca quebram no meio ("R$" de um lado, "147" do outro) */
+[data-preco], [data-preco-cheio], [data-preco-produto], [data-soma], [data-desconto], [data-contador] { white-space: nowrap; }
+
+/* rótulo de editor: nome de faixa, unidade, legenda de número */
+.rotulo {
+  font: 600 .6875rem/1.2 var(--mono);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--apagado);
+}
+
+/* linha miúda sob um botão: preço, prazo, garantia */
+.letrinha {
+  margin-top: 14px;
+  color: var(--apagado);
+  font: 500 .8125rem/1.55 var(--fonte);
+}
+.letrinha [data-preco] { color: var(--texto); font-family: var(--mono); font-weight: 600; }
+
+/* ---------- grade ---------- */
+
+.conteudo {
+  width: 100%;
+  max-width: calc(var(--largura) + 2 * var(--margem));
+  margin-inline: auto;
+  padding-inline: var(--margem);
+}
+
+.secao {
+  padding-block: var(--secao);
+  border-top: 1px solid var(--linha);
+}
+
+/* ---------- botões ---------- */
+
+.botao {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px 10px;
+  flex-wrap: wrap;
+  min-height: 58px;
+  padding: 16px 18px;
+  border: 0;
+  border-radius: var(--raio-botao);
+  background: var(--lima);
+  color: var(--sobre-lima);
+  font: 800 1.0625rem/1.15 var(--fonte);
+  letter-spacing: -.01em;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .45), 0 12px 28px -18px rgba(0, 0, 0, .9);
+  transition: transform .25s var(--curva), background-color .2s;
+}
+.botao:hover { background: var(--lima-claro); transform: translateY(-1px); }
+.botao:active { transform: translateY(0) scale(.985); }
+.botao-preco { font: 600 .875rem/1 var(--mono); letter-spacing: 0; opacity: .72; }
+.botao .seta { flex: none; width: 18px; height: 18px; transition: transform .3s var(--curva); }
+.botao:hover .seta { transform: translateX(3px); }
+@media (min-width: 560px) {
+  .botao { gap: 8px 14px; padding: 16px 22px 16px 24px; }
+}
+
+/* botão pequeno, de contorno: "comprar só este" */
+.botao-mini {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 8px 14px;
+  border: 1px solid var(--linha-forte);
+  border-radius: 10px;
+  color: var(--texto);
+  font: 600 .8125rem/1 var(--fonte);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: border-color .2s, color .2s, background-color .2s;
+}
+.botao-mini:hover { border-color: var(--lima); color: var(--lima); background: rgba(215, 255, 61, .06); }
+
+/* luz de gravação */
+.rec {
+  flex: none;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--rec);
+  box-shadow: 0 0 0 4px rgba(255, 75, 62, .16);
+}
+
+/* ---------- 1. faixa da Black ---------- */
+
+.black {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 4px 10px;
+  padding: 10px var(--margem);
+  background: var(--painel);
+  border-bottom: 1px solid var(--linha);
+  color: var(--texto-suave);
+  font: 500 .8125rem/1.4 var(--fonte);
+  text-align: center;
+  text-decoration: none;
+}
+.black-selo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--lima);
+  font: 700 .75rem/1 var(--mono);
+  letter-spacing: .16em;
+}
+.black .rec { width: 7px; height: 7px; box-shadow: 0 0 0 3px rgba(255, 75, 62, .18); transition: opacity .45s ease-out; }
+.black[data-pulso="1"] .rec { opacity: .3; }
+.black b { color: var(--texto); font-weight: 700; }
+.black-oferta::before, .black-prazo::before { content: '·'; margin-right: 10px; color: var(--apagado); }
+.black .black-contador { color: var(--lima); font: 600 .8125rem/1 var(--mono); font-variant-numeric: tabular-nums; }
+.black:hover .black-oferta { text-decoration: underline; text-decoration-color: var(--linha-forte); }
+@media (max-width: 559px) {
+  /* no celular o prazo desce para a segunda linha */
+  .black-prazo { flex-basis: 100%; }
+  .black-prazo::before { content: none; }
+}
+
+/* ---------- 2. abertura ---------- */
+
+.topo { border-bottom: 1px solid var(--linha); }
+.topo-linha {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 60px;
+}
+.marca {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font: 800 .9375rem/1 var(--fonte);
+  letter-spacing: -.005em;
+  white-space: nowrap;
+}
+
+/* chave de som, como o botão de mudo de uma faixa */
+.chave-som {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 14px 0 12px;
+  border: 1px solid var(--linha);
+  border-radius: 99px;
+  background: transparent;
+  color: var(--apagado);
+  font: 600 .6875rem/1 var(--mono);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color .2s, border-color .2s;
+}
+.chave-som:hover { color: var(--texto); border-color: var(--linha-forte); }
+.chave-som svg { flex: none; width: 16px; height: 16px; }
+@media (max-width: 359px) {
+  /* tela muito estreita: o ícone mostra o estado; o aria-pressed diz ao leitor de tela */
+  .chave-som [data-som-estado] { display: none; }
+}
+.chave-som .icone-ligado { display: none; }
+.chave-som[aria-pressed="true"] { color: var(--lima); border-color: rgba(215, 255, 61, .35); }
+.chave-som[aria-pressed="true"] .icone-ligado { display: block; }
+.chave-som[aria-pressed="true"] .icone-mudo { display: none; }
+
+/* No celular a primeira tela já mostra a manchete e o reel tocando, com a linha do tempo logo embaixo;
+   o texto e o botão vêm depois (o botão fixo cobre o resto). */
+.abertura-grade {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: "titulo" "vitrine" "linha" "texto";
+  padding-block: 20px 56px;
+}
+.abertura-titulo { grid-area: titulo; margin-bottom: 20px; }
+.abertura-texto { grid-area: texto; padding-top: 30px; }
+.abertura .sub { margin-top: 0; max-width: 34ch; }
+.abertura .botao { width: 100%; margin-top: 26px; }
+
+/* o celular: a moldura é do site; a tela é o espaço do vídeo */
+.vitrine { grid-area: vitrine; display: grid; justify-items: center; }
+.fone {
+  position: relative;
+  width: min(54vw, 204px);
+  padding: 6px;
+  border-radius: 30px;
+  background: #1b1b1e;
+  box-shadow: inset 0 0 0 1px #34343a, 0 40px 70px -30px rgba(0, 0, 0, .95);
+}
+.fone .bolha {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  z-index: 2;
+  width: 22%;
+  height: 15px;
+  border-radius: 99px;
+  background: #000;
+  transform: translateX(-50%);
+}
+/* a tela é 9:16 exato (a moldura fica fora da conta), para o reel não ganhar tarja */
+.tela { position: relative; width: 100%; aspect-ratio: 9 / 16; overflow: hidden; border-radius: 24px; background: #000; }
+.tela iframe, .tela video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  object-fit: cover;
+  pointer-events: none;          /* o toque passa para a página (é ele que liga o som) */
+}
+
+/* o selo sob o celular: o nome do efeito que está acontecendo, aceso em lima */
+.selo-efeito {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 12px;
+  padding: 7px 13px 7px 11px;
+  border: 1px solid var(--linha);
+  border-radius: 99px;
+  background: var(--painel);
+  color: var(--apagado);
+  font: 600 .6875rem/1 var(--mono);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: border-color .25s;
+}
+.selo-luz { flex: none; width: 7px; height: 7px; margin-right: 2px; border-radius: 50%; background: var(--linha-forte); transition: background-color .2s, box-shadow .2s; }
+.selo-efeito b { display: inline-block; color: var(--texto-suave); font-weight: 700; transition: color .2s; }
+.selo-efeito.aceso { border-color: rgba(215, 255, 61, .38); }
+.selo-efeito.aceso .selo-luz { background: var(--lima); box-shadow: 0 0 0 3px rgba(215, 255, 61, .18); }
+.selo-efeito.aceso b { color: var(--lima); }
+
+@media (min-width: 560px) {
+  .abertura .botao { width: auto; }
+  .fone { width: 236px; padding: 7px; border-radius: 34px; }
+  .tela { border-radius: 27px; }
+}
+
+/* ---------- a linha do tempo da abertura ---------- */
+
+/* No celular ela ocupa a largura toda e rola de lado só por dentro; os nomes das faixas ficam presos à esquerda. */
+.linha {
+  --faixa-alto: 28px;
+  --faixa-vao: 4px;
+  --regua-alto: 22px;
+  --rotulos: 80px;
+  --px-s: 84px;                  /* pixels por segundo quando a linha rola */
+  grid-area: linha;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas: "rolagem rolagem" "tocar tempo" "legenda legenda";
+  align-items: center;
+  margin: 18px calc(-1 * var(--margem)) 0;
+  border-block: 1px solid var(--linha);
+  background: var(--painel);
+  -webkit-user-select: none;
+  user-select: none;
+}
+.linha-tocar {
+  grid-area: tocar;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin: 4px 0 4px calc(var(--margem) - 10px);
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--texto);
+  cursor: pointer;
+  transition: background-color .2s, color .2s;
+}
+.linha-tocar:hover { background: var(--painel-2); color: var(--lima); }
+.linha-tocar svg { width: 18px; height: 18px; }
+.linha .icone-tocar, .linha.pausada .icone-pausar { display: none; }
+.linha.pausada .icone-tocar { display: block; }
+.linha-tempo {
+  grid-area: tempo;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding-right: var(--margem);
+  color: var(--apagado);
+  font: 600 .75rem/1 var(--mono);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.linha-tempo b { color: var(--lima); font-weight: 600; }
+.linha-legenda {
+  grid-area: legenda;
+  padding: 11px var(--margem) 13px;
+  border-top: 1px solid var(--linha);
+  color: var(--apagado);
+  font-size: .8125rem;
+  line-height: 1.45;
+}
+.linha-rolagem {
+  grid-area: rolagem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  border-bottom: 1px solid var(--linha);
+}
+.linha-rolagem::-webkit-scrollbar { display: none; }
+.linha-miolo { display: flex; width: max-content; min-width: 100%; }
+
+.linha-rotulos {
+  position: sticky;
+  left: 0;
+  z-index: 3;
+  flex: none;
+  width: var(--rotulos);
+  margin: 0;
+  padding: var(--regua-alto) 0 10px;
+  list-style: none;
+  border-right: 1px solid var(--linha);
+  background: var(--painel);
+}
+.linha-rotulos li {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  height: var(--faixa-alto);
+  margin-top: var(--faixa-vao);
+  padding-left: calc(var(--margem) - 6px);
+  color: var(--apagado);
+  font: 600 .6875rem/1 var(--mono);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.linha-rotulos li::before { content: ''; flex: none; width: 6px; height: 6px; border-radius: 2px; background: var(--cor-faixa); }
+.linha-rotulos small { display: none; font: inherit; color: var(--apagado); }
+.rotulo-voz { --cor-faixa: var(--voz); }
+.rotulo-legenda { --cor-faixa: var(--texto-suave); }
+.rotulo-efeitos { --cor-faixa: var(--lima); }
+.rotulo-som { --cor-faixa: var(--som); }
+
+/* a área que se arrasta: o dedo de lado move a agulha; de cima para baixo, rola a página */
+.linha-pista { flex: 1 0 auto; padding: 0 14px 10px; touch-action: pan-y; cursor: pointer; outline-offset: -3px; }
+.faixas { position: relative; width: calc(var(--duracao, 13.95) * var(--px-s)); }
+.linha.arrastando, .linha.arrastando .linha-pista { cursor: grabbing; }
+
+.regua { position: relative; height: var(--regua-alto); }
+.tique { position: absolute; bottom: 0; width: 1px; height: 8px; background: var(--linha-forte); }
+.tique.meio { height: 4px; background: var(--linha); }
+.tique-n { position: absolute; bottom: 9px; padding-left: 4px; color: var(--apagado); font: 500 .6875rem/1 var(--mono); font-variant-numeric: tabular-nums; }
+
+.faixa { position: relative; height: var(--faixa-alto); margin-top: var(--faixa-vao); overflow: hidden; border-radius: 6px; background: var(--painel-2); }
+
+/* VOZ: a onda; a parte já falada acende */
+.onda { position: absolute; inset: 4px 0; opacity: .32; }
+.onda svg { display: block; width: 100%; height: 100%; fill: var(--voz); }
+.onda-tocada { opacity: 1; clip-path: inset(0 100% 0 0); }
+
+/* LEGENDA: uma frase por bloco */
+.bloco {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, .16);
+  border-radius: 5px;
+  background: rgba(255, 255, 255, .045);
+  color: var(--texto-suave);
+  font: 500 .6875rem/1 var(--fonte);
+  white-space: nowrap;
+}
+.bloco span { overflow: hidden; text-overflow: ellipsis; }
+.bloco.ativo { border-color: var(--texto); background: var(--texto); color: var(--fundo); }
+
+/* EFEITOS e SOM: a marca começa na palavra exata (o traço) e a barra mostra quanto o efeito dura */
+.marcador { position: absolute; top: 0; bottom: 0; color: var(--lima); }
+.marcador-som { color: var(--som); }
+.marcador::before { content: ''; position: absolute; left: 0; top: 4px; bottom: 4px; width: 2px; border-radius: 1px; background: currentColor; opacity: .65; }
+.marcador-barra { position: absolute; left: 0; right: 0; bottom: 5px; height: 5px; border-radius: 3px; background: currentColor; opacity: .24; }
+.marcador-nome { position: absolute; left: 6px; top: 5px; font: 600 .6875rem/1 var(--mono); white-space: nowrap; opacity: .72; }
+.marcador.sem-nome .marcador-nome { visibility: hidden; }
+.marcador.ativo::before, .marcador.ativo .marcador-nome { opacity: 1; }
+.marcador.ativo .marcador-barra { opacity: 1; }
+.trilha { position: absolute; left: 0; right: 0; bottom: 1px; height: 2px; border-radius: 1px; background: var(--som); opacity: .3; }
+
+/* a agulha: lima, de cima a baixo, com a cabeça na régua */
+.agulha { position: absolute; top: 0; bottom: 0; left: 0; z-index: 2; width: 0; pointer-events: none; }
+.agulha::before { content: ''; position: absolute; top: 10px; bottom: 0; left: -1px; width: 2px; background: var(--lima); }
+.agulha-cabeca {
+  position: absolute;
+  top: 3px;
+  left: -6px;
+  width: 12px;
+  height: 14px;
+  background: var(--lima);
+  clip-path: polygon(0 0, 100% 0, 100% 62%, 50% 100%, 0 62%);
+  transition: transform .2s var(--curva);
+}
+.linha.arrastando .agulha-cabeca { transform: scale(1.25); }
+
+@media (min-width: 960px) {
+  /* manchete e texto à esquerda, o celular à direita; a linha do tempo embaixo, de lado a lado, tudo na
+     primeira tela: o celular cresce com a altura da janela */
+  .abertura { --acima: 345px; }
+  .na-black .abertura { --acima: 384px; }
+  .abertura-grade {
+    grid-template-columns: minmax(0, 1.12fr) minmax(0, .88fr);
+    grid-template-rows: 1fr auto auto 1fr auto;
+    grid-template-areas:
+      ".      vitrine"
+      "titulo vitrine"
+      "texto  vitrine"
+      ".      vitrine"
+      "linha  linha";
+    column-gap: 48px;
+    padding-block: 20px 88px;
+  }
+  .abertura-titulo { margin-bottom: 0; }
+  .abertura-texto { padding-top: 24px; }
+  .abertura .botao { margin-top: 30px; }
+  .fone {
+    width: clamp(190px, calc((100vh - var(--acima) - 14px) * .5625 + 14px), 300px);
+    width: clamp(190px, calc((100svh - var(--acima) - 14px) * .5625 + 14px), 300px);
+  }
+
+  .linha {
+    --rotulos: 118px;
+    --px-s: 0px;
+    grid-template-columns: auto auto minmax(0, 1fr);
+    grid-template-areas: "tocar tempo legenda" "rolagem rolagem rolagem";
+    margin: 18px 0 0;
+    overflow: hidden;
+    border: 1px solid var(--linha);
+    border-radius: var(--raio);
+  }
+  .linha-tocar { width: 36px; height: 36px; margin: 2px 2px 2px 8px; }
+  .linha-tempo { padding-right: 0; }
+  .linha-legenda { padding: 0 18px; border-top: 0; text-align: right; }
+  .linha-rolagem { border-top: 1px solid var(--linha); border-bottom: 0; }
+  .linha-miolo { width: 100%; }
+  .linha-pista { flex: 1 1 0; min-width: 0; padding-inline: 16px; }
+  .faixas { width: auto; }
+  .linha-rotulos li { padding-left: 16px; }
+  .linha-rotulos small { display: inline; }
+}
+@media (min-width: 960px) and (max-height: 790px) {
+  /* janela baixa (1366 x 768, 1280 x 720): o texto encolhe para a linha do tempo caber na primeira tela */
+  .abertura h1 { font-size: clamp(2.75rem, 1.6rem + 2.6vw, 3.75rem); }
+  .abertura .sub { max-width: 42ch; font-size: 1.0625rem; }
+  .abertura-texto { padding-top: 18px; }
+  .linha { --faixa-alto: 26px; }
+  .abertura .botao { margin-top: 22px; }
+}
+
+/* ---------- 3. veja a IA editando ---------- */
+
+.editando-grade { display: grid; grid-template-columns: minmax(0, 1fr); gap: 32px; }
+.editando-cabeca .sub { max-width: 30ch; }
+
+/* o visor: a prévia do editor, com o reel no meio e a leitura do que a camada faz embaixo */
+.visor { padding: 12px 12px 14px; border: 1px solid var(--linha); border-radius: 20px; background: var(--painel); }
+.visor-topo { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 2px 12px; }
+.visor-passo b { color: var(--lima); font-weight: 700; }
+.chave-bruto { display: inline-flex; padding: 3px; border: 1px solid var(--linha); border-radius: 10px; background: var(--fundo); }
+.chave-bruto button {
+  min-height: 34px;
+  padding: 0 13px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--apagado);
+  font: 600 .75rem/1 var(--mono);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color .2s, color .2s;
+}
+.chave-bruto button:hover { color: var(--texto); }
+.chave-bruto button[aria-pressed="true"] { background: var(--lima); color: var(--sobre-lima); }
+.visor-reel { position: relative; width: min(100%, 264px); margin-inline: auto; aspect-ratio: 9 / 16; overflow: hidden; border-radius: 14px; background: var(--reel-fundo); }
+.visor-leitura { min-height: 1.45em; margin-top: 12px; padding: 0 2px; color: var(--texto-suave); font: 500 .75rem/1.45 var(--mono); text-align: center; }
+.visor-leitura b { margin-right: 8px; color: var(--lima); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+
+/* os passos: o atual em lima, com a barra do tempo dele; os feitos com o número aceso */
+.passos { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.passo {
+  position: relative;
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  align-items: start;
+  gap: 14px;
+  width: 100%;
+  padding: 13px 16px 14px 13px;
+  overflow: hidden;
+  border: 1px solid var(--linha);
+  border-radius: 12px;
+  background: var(--painel);
+  color: var(--apagado);
+  font: 500 .9375rem/1.4 var(--fonte);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color .25s, color .25s, background-color .25s;
+}
+.passo b { color: var(--texto-suave); font-weight: 700; }
+.passo-texto { padding-top: 3px; }
+.passo-n {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--linha-forte);
+  border-radius: 8px;
+  color: var(--apagado);
+  font: 700 .75rem/1 var(--mono);
+  transition: background-color .25s, border-color .25s, color .25s;
+}
+.passo:hover { border-color: var(--linha-forte); color: var(--texto-suave); }
+.passo.passou .passo-n { border-color: rgba(215, 255, 61, .45); color: var(--lima); }
+.passo.atual { border-color: rgba(215, 255, 61, .5); background: var(--painel-2); color: var(--texto); }
+.passo.atual b { color: var(--texto); }
+.passo.atual .passo-n { border-color: var(--lima); background: var(--lima); color: var(--sobre-lima); }
+.passo-barra { position: absolute; left: 0; bottom: 0; width: 100%; height: 2px; background: var(--lima); transform-origin: left; transform: scaleX(var(--progresso, 0)); }
+.passo:not(.atual) .passo-barra { display: none; }
+.passo-agora { display: none; }
+@media (max-width: 959px) {
+  .passos { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .passo { min-height: 44px; padding: 0; place-items: center; grid-template-columns: 1fr; gap: 0; }
+  .passo-texto { display: none; }
+  .passo-agora {
+    display: block;
+    min-height: 2.9em;
+    margin-top: 12px;
+    color: var(--texto-suave);
+    font-size: .9375rem;
+    line-height: 1.45;
+  }
+  .passo-agora b { color: var(--texto); font-weight: 700; }
+}
+@media (min-width: 640px) and (max-width: 959px) {
+  .passos, .passo-agora { justify-self: center; width: min(100%, 420px); }
+}
+
+/* o reel do visor: um quadro de 1080 x 1920 com as cores da cena do kit, escalado para a caixa (editando.js) */
+.r-palco { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; transform-origin: 0 0; color: var(--reel-tinta); font-family: var(--reel-texto); }
+.r-palco p { margin: 0; }
+.r-palco svg { display: block; overflow: visible; }
+.r-pontos { position: absolute; inset: 0; background-image: radial-gradient(rgba(244, 239, 226, .07) 2px, transparent 2.6px); background-size: 36px 36px; opacity: 0; }
+.r-camada { position: absolute; inset: 0; transform-origin: 50% 40%; }
+.r-cena, .r-item { position: absolute; inset: 0; }
+.r-cena > *, .r-item > * { position: absolute; }
+.r-tit { left: 60px; width: 880px; text-align: center; font: 78px/1 var(--reel-manchete); text-transform: uppercase; }
+.r-grande { font-size: 190px; color: var(--reel-destaque); }
+.r-erro { left: 60px; top: 286px; width: 880px; text-align: center; color: var(--reel-destaque); font: 700 44px/1 var(--reel-texto); letter-spacing: .2em; }
+.r-n { top: 336px; font-size: 230px; color: var(--reel-destaque); }
+.r-nome { top: 596px; font-size: 86px; }
+.r-des { width: 600px; height: 400px; }
+.r-carimbo { padding: 14px 26px 8px; border-radius: 16px; background: var(--reel-alerta); color: var(--reel-sombra); font: 66px/1 var(--reel-manchete); letter-spacing: 1px; white-space: nowrap; }
+.r-cartao { left: 260px; top: 650px; width: 560px; height: 400px; }
+.r-cartao svg { width: 100%; height: 100%; }
+.r-cartao-rotulo { font: 700 30px var(--reel-texto); letter-spacing: 6px; }
+.r-num { position: absolute; left: 48px; top: 238px; color: var(--reel-fundo); font: 124px/1 var(--reel-manchete); }
+.r-num.subiu { color: var(--reel-sombra); }
+.r-barra { position: absolute; left: 48px; top: 368px; width: 464px; height: 12px; border-radius: 6px; background: var(--reel-destaque); transform: scaleX(0); transform-origin: left; }
+.r-raios { left: 0; top: 600px; width: 1080px; height: 600px; }
+.r-seta { left: 690px; top: 868px; width: 120px; height: 140px; }
+.r-progresso { position: absolute; left: 560px; top: 236px; display: flex; align-items: center; justify-content: flex-end; gap: 10px; width: 380px; font: 700 34px/1 var(--reel-texto); letter-spacing: .08em; }
+.r-progresso span { margin-right: 6px; }
+.r-progresso i { width: 36px; height: 36px; border: 6px solid var(--reel-tinta); border-radius: 50%; }
+.r-progresso i.aceso { border-color: var(--reel-destaque); background: var(--reel-destaque); }
+.s-tinta, .s-alerta, .s-sombra, .s-destaque { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.s-tinta { stroke: var(--reel-tinta); }
+.s-alerta { stroke: var(--reel-alerta); }
+.s-sombra { stroke: var(--reel-sombra); }
+.s-destaque { stroke: var(--reel-destaque); }
+.f-tinta { fill: var(--reel-tinta); }
+.f-fundo { fill: var(--reel-fundo); }
+.f-destaque { fill: var(--reel-destaque); }
+.f-alerta { fill: var(--reel-alerta); }
+.f-sombra { fill: var(--reel-sombra); }
+.r-vazio { fill: none; stroke: var(--reel-tinta); stroke-width: 8; stroke-dasharray: 16 14; opacity: .7; }
+.r-traco { stroke-dasharray: 1; stroke-dashoffset: 1; }
+
+/* o roteiro: o texto que a pessoa escreve; com a voz, cada frase ganha o seu segundo */
+.r-roteiro { inset: 214px auto auto 84px; width: 912px; transform-origin: 0 0; }
+.r-roteiro-titulo { margin-bottom: 30px; color: var(--reel-destaque); font: 600 34px/1 var(--mono); }
+.r-frase { display: grid; grid-template-columns: 116px minmax(0, 1fr); column-gap: 20px; margin-top: 30px; }
+.r-quando { padding-top: 15px; color: var(--voz); font: 600 32px/1 var(--mono); }
+.r-quando i { font-style: normal; color: var(--reel-tinta); opacity: .28; }
+.r-quando b { display: none; font-weight: inherit; }
+.r-quando.visto i { display: none; }
+.r-quando.visto b { display: inline; }
+.r-fala { font: 500 56px/1.38 var(--reel-texto); }
+.r-fala span { margin: 0 -3px; padding: 0 3px; border-radius: 10px; }
+.r-fala .falta { opacity: .36; }
+.r-fala .agora { background: var(--reel-destaque); color: var(--reel-sombra); }
+
+/* a legenda do reel, no lugar e no estilo da do kit */
+.r-legenda {
+  position: absolute;
+  left: 100px;
+  top: 1210px;
+  width: 880px;
+  color: var(--reel-tinta);
+  font: 84px/1.08 var(--reel-manchete);
+  letter-spacing: .5px;
+  text-align: center;
+  text-transform: uppercase;
+  text-shadow: 6px 0 var(--reel-sombra), -6px 0 var(--reel-sombra), 0 6px var(--reel-sombra), 0 -6px var(--reel-sombra),
+    4px 4px var(--reel-sombra), -4px 4px var(--reel-sombra), 4px -4px var(--reel-sombra), -4px -4px var(--reel-sombra), 0 12px 0 var(--reel-sombra);
+  opacity: 0;
+}
+.r-legenda .r-forte, .r-legenda .agora { color: var(--reel-destaque); }
+.r-legenda .falta { opacity: .3; }
+
+/* as faixas de voz e som, no pé do reel (a área que o aplicativo cobre no post) */
+.r-faixa { position: absolute; left: 60px; width: 960px; border-radius: 26px; background: rgba(11, 33, 28, .92); box-shadow: inset 0 0 0 3px rgba(244, 239, 226, .1); opacity: 0; }
+.r-voz { top: 1592px; height: 118px; }
+.r-som { top: 1726px; height: 84px; }
+.r-faixa-nome { position: absolute; left: 30px; top: 50%; font: 700 30px/1 var(--mono); letter-spacing: .08em; transform: translateY(-50%); }
+.r-voz .r-faixa-nome { color: var(--voz); }
+.r-som .r-faixa-nome { color: var(--som); }
+.r-area { position: absolute; left: 150px; right: 34px; top: 0; bottom: 0; }
+.r-onda { position: absolute; inset: 22px 0; opacity: .3; }
+.r-onda svg { width: 100%; height: 100%; fill: var(--voz); }
+.r-onda-tocada { opacity: 1; clip-path: inset(0 100% 0 0); }
+.r-cabeca { position: absolute; top: 10px; bottom: 10px; left: 0; width: 6px; margin-left: -3px; border-radius: 3px; background: var(--lima); }
+.r-som-linha { position: absolute; left: 0; right: 0; top: 50%; }
+.r-som-linha b { position: absolute; left: 0; right: 0; top: -2px; height: 4px; border-radius: 2px; background: var(--som); opacity: .35; }
+.r-som-linha i { position: absolute; top: -13px; width: 26px; height: 26px; margin-left: -13px; border-radius: 50%; background: var(--som); box-shadow: 0 0 0 6px rgba(11, 33, 28, .92); }
+.r-som-linha i.ativo { transform: scale(1.45); box-shadow: 0 0 0 6px rgba(255, 154, 61, .35); }
+
+@media (min-width: 640px) {
+  .visor { justify-self: center; width: min(100%, 420px); }
+  .visor-reel { width: min(100%, 300px); }
+}
+@media (min-width: 960px) {
+  /* no computador o visor fica à esquerda; o título e os passos, à direita */
+  .editando-grade {
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+    grid-template-areas: "visor cabeca" "visor passos";
+    column-gap: 72px;
+    row-gap: 36px;
+  }
+  .editando-cabeca { grid-area: cabeca; align-self: end; }
+  .visor { grid-area: visor; width: 330px; }
+  .visor-reel { width: 300px; }
+  .passos { grid-area: passos; align-self: start; max-width: 560px; }
+  .passo { padding: 16px 20px 17px 16px; font-size: 1.0625rem; }
+}
+
+/* ---------- 4. editar virou conversa ---------- */
+
+.conversa-grade { display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px; }
+.conversa-cabeca .sub { max-width: 36ch; }
+
+.chat { padding: 14px 14px 18px; border: 1px solid var(--linha); border-radius: 20px; background: var(--painel); }
+.chat-topo { display: flex; align-items: center; gap: 10px; padding: 2px 4px 14px; border-bottom: 1px solid var(--linha); }
+.chat-topo .rec { width: 7px; height: 7px; box-shadow: 0 0 0 3px rgba(255, 75, 62, .16); }
+.chat-mensagens { display: grid; gap: 10px; margin: 14px 0 0; padding: 0; list-style: none; }
+/* a barra de escrever: o espaço que sobra embaixo das mensagens lê como conversa em andamento */
+.chat-campo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 16px;
+  padding: 14px 4px 0;
+  border-top: 1px solid var(--linha);
+  color: var(--apagado);
+  font-size: .9375rem;
+}
+.chat-enviar { display: grid; place-items: center; flex: none; width: 34px; height: 34px; border-radius: 10px; background: var(--lima); color: var(--sobre-lima); }
+.chat-enviar svg { width: 16px; height: 16px; }
+.msg { position: relative; display: flex; }
+.msg-pessoa { justify-content: flex-end; }
+.msg-bolha { max-width: 88%; padding: 11px 14px 12px; border-radius: 16px; font-size: .9375rem; line-height: 1.42; transform-origin: 0 100%; }
+.msg-pessoa .msg-bolha { border-bottom-right-radius: 6px; background: var(--linha); color: var(--texto); transform-origin: 100% 100%; }
+.msg-ia .msg-bolha { border: 1px solid var(--linha); border-bottom-left-radius: 6px; background: var(--painel-2); color: var(--texto-suave); }
+.msg-quem { margin-bottom: 4px; color: var(--lima); font: 700 .6875rem/1.25 var(--mono); letter-spacing: .06em; text-transform: uppercase; }
+/* os três pontos de quem está escrevendo, no lugar da resposta que vem */
+.msg-digitando {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 13px;
+  border: 1px solid var(--linha);
+  border-radius: 14px;
+  background: var(--painel-2);
+  opacity: 0;
+  transform-origin: 0 50%;
+  pointer-events: none;
+}
+.msg-digitando b { margin-right: 6px; color: var(--lima); font: 700 .6875rem/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
+.msg-digitando i { width: 5px; height: 5px; border-radius: 50%; background: var(--texto-suave); }
+
+/* os arquivos: na fila, trabalhando (o ponto pisca) ou feito (visto em lima) */
+.esteira { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.etapa {
+  display: grid;
+  grid-template-columns: 1.5rem minmax(0, 1fr) 18px;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 10px;
+  border: 1px solid var(--linha);
+  border-radius: 12px;
+  background: var(--painel);
+  transition: border-color .3s, background-color .3s;
+}
+.etapa-n { color: var(--apagado); font: 600 .75rem/1 var(--mono); transition: color .3s; }
+.etapa-nome { color: var(--apagado); font-size: .875rem; font-weight: 700; line-height: 1.25; transition: color .3s; }
+.etapa-estado { justify-self: end; width: 18px; height: 18px; border: 1.5px solid var(--linha-forte); border-radius: 50%; }
+.etapa.fazendo { border-color: rgba(215, 255, 61, .35); }
+.etapa.fazendo .etapa-nome { color: var(--texto-suave); }
+.etapa.fazendo .etapa-estado { border-color: var(--lima); background: radial-gradient(circle, var(--lima) 0 3.5px, transparent 4px); opacity: var(--pisca, 1); }
+.etapa.pronta { border-color: rgba(215, 255, 61, .45); background: var(--painel-2); }
+.etapa.pronta .etapa-n { color: var(--lima); }
+.etapa.pronta .etapa-nome { color: var(--texto); }
+.etapa.pronta .etapa-estado {
+  border-color: var(--lima);
+  background: var(--lima) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.4l2.6 2.6L12 5.4' fill='none' stroke='%230a0a0b' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 13px no-repeat;
+}
+
+@media (min-width: 640px) {
+  .esteira { grid-template-columns: 1fr 1fr; }
+}
+@media (min-width: 960px) {
+  /* no computador a conversa à esquerda e os arquivos ao lado */
+  .conversa-grade {
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, .65fr);
+    grid-template-areas: "cabeca cabeca" "chat esteira";
+    gap: 44px 40px;
+    align-items: start;
+  }
+  .conversa-cabeca { grid-area: cabeca; }
+  .chat { grid-area: chat; max-width: 640px; padding: 18px 22px 24px; }
+  .msg-bolha { max-width: 74%; }
+  .esteira { grid-area: esteira; grid-template-columns: 1fr; position: sticky; top: 24px; }
+  .etapa { grid-template-columns: 1.75rem minmax(0, 1fr) 20px; gap: 10px; min-height: 60px; padding: 12px 18px; }
+  .etapa-nome { font-size: 1rem; }
+}
+
+/* ---------- 5. os 6 arquivos ---------- */
+
+/* No celular as capas passam de lado, ocupando a largura toda, com as vizinhas aparecendo nas pontas; as setas
+   e as miniaturas ficam embaixo delas, e o detalhe do escolhido logo depois. */
+.arquivos-grade { display: grid; grid-template-columns: minmax(0, 1fr); gap: 34px; }
+.arquivos-cabeca .sub { max-width: 36ch; }
+
+.catalogo { --capa-l: min(58vw, 236px); margin-inline: calc(-1 * var(--margem)); }
+.capas {
+  position: relative;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  outline-offset: -3px;
+}
+.capas::-webkit-scrollbar { display: none; }
+.capas-trilho {
+  display: flex;
+  gap: 14px;
+  width: max-content;
+  margin: 0;
+  padding: 10px calc(50% - var(--capa-l) / 2) 16px;
+  list-style: none;
+}
+/* --perto (1 no meio, 0 a uma capa de distância) encolhe e apaga as vizinhas (catalogo.js) */
+.capa {
+  flex: none;
+  width: var(--capa-l);
+  scroll-snap-align: center;
+  opacity: calc(.38 + .62 * var(--perto, 1));
+  transform: scale(calc(.88 + .12 * var(--perto, 1)));
+  cursor: pointer;
+}
+.capa-tela {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 9 / 16;
+  overflow: hidden;
+  border-radius: 18px;
+  background: var(--reel-fundo);
+  box-shadow: 0 0 0 1px var(--linha), 0 34px 60px -34px rgba(0, 0, 0, .95);
+  transition: box-shadow .25s;
+}
+.capa.atual .capa-tela { box-shadow: 0 0 0 2px rgba(215, 255, 61, .6), 0 34px 60px -34px rgba(0, 0, 0, .95); }
+.capa-viva { position: absolute; inset: 0; }
+.capa-tela video { width: 100%; height: 100%; object-fit: cover; }
+
+.capas-controles { display: flex; align-items: center; justify-content: center; gap: 10px; padding-inline: var(--margem); }
+.capas-seta {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid var(--linha);
+  border-radius: 50%;
+  background: var(--painel);
+  color: var(--texto);
+  cursor: pointer;
+  transition: border-color .2s, color .2s;
+}
+.capas-seta:hover { border-color: var(--lima); color: var(--lima); }
+.capas-seta svg { width: 18px; height: 18px; }
+/* as miniaturas: o quadro da capa da loja, parado, com o número embaixo; encolhem se não couberem */
+.miniaturas { display: flex; flex: 0 1 auto; gap: 6px; min-width: 0; margin: 0; padding: 0; list-style: none; }
+.miniaturas li { flex: 0 1 32px; width: 32px; min-width: 24px; }
+.miniatura {
+  display: grid;
+  justify-items: center;
+  gap: 5px;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--apagado);
+  cursor: pointer;
+}
+.miniatura-tela {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 9 / 16;
+  overflow: hidden;
+  border-radius: 5px;
+  background: var(--reel-fundo);
+  box-shadow: 0 0 0 1px var(--linha-forte);
+  opacity: .5;
+  transition: opacity .2s, box-shadow .2s;
+}
+.miniatura:hover .miniatura-tela { opacity: .85; }
+.miniatura[aria-current="true"] .miniatura-tela { opacity: 1; box-shadow: 0 0 0 2px var(--lima); }
+.miniatura-n { font: 600 .6875rem/1 var(--mono); letter-spacing: .04em; }
+.miniatura[aria-current="true"] .miniatura-n { color: var(--lima); }
+
+/* o detalhe do arquivo escolhido */
+.arquivo { min-width: 0; }
+.arquivo-nome {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  font-size: clamp(1.875rem, 1.4rem + 1.6vw, 2.625rem);
+  font-weight: 800;
+  line-height: 1.04;
+  letter-spacing: -.03em;
+}
+.arquivo-n { flex: none; color: var(--lima); font: 600 .875rem/1 var(--mono); letter-spacing: .04em; }
+.arquivo-promessa { margin-top: 14px; max-width: 42ch; color: var(--texto-suave); font-size: clamp(1.0625rem, 1rem + .3vw, 1.1875rem); line-height: 1.5; }
+.arquivo-faz { margin: 24px 0 0; padding: 0; list-style: none; border-top: 1px solid var(--linha); }
+.arquivo-faz li {
+  position: relative;
+  padding: 13px 0 13px 30px;
+  border-bottom: 1px solid var(--linha);
+  color: var(--texto-suave);
+  font-size: .96875rem;
+  line-height: 1.45;
+}
+.arquivo-faz li::before {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 1.45em;
+  width: 11px;
+  height: 6px;
+  border-left: 2px solid var(--lima);
+  border-bottom: 2px solid var(--lima);
+  transform: translateY(-60%) rotate(-45deg);
+}
+.arquivo-roda { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; margin-top: 18px; color: var(--texto); font-weight: 600; }
+.arquivo-compra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 16px;
+  margin-top: 22px;
+  padding: 14px 14px 14px 18px;
+  border: 1px solid var(--linha);
+  border-radius: var(--raio);
+  background: var(--painel);
+}
+.arquivo-preco { color: var(--apagado); font-size: .9375rem; }
+.arquivo-preco b { margin-right: 4px; color: var(--texto); font: 800 1.5rem/1 var(--fonte); letter-spacing: -.02em; }
+
+@media (min-width: 960px) {
+  /* no computador: a capa à esquerda, entre as setas, com as miniaturas embaixo; o título e o detalhe à direita.
+     A capa ocupa a janela inteira das capas, e a troca é a capa passando de lado. */
+  .arquivos-grade {
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+    grid-template-areas: "catalogo cabeca" "catalogo arquivo";
+    column-gap: 80px;
+    row-gap: 30px;
+  }
+  .arquivos-cabeca { grid-area: cabeca; align-self: end; }
+  .catalogo {
+    --capa-l: 300px;
+    grid-area: catalogo;
+    display: grid;
+    grid-template-columns: 40px var(--capa-l) 40px;
+    grid-template-areas: "antes capas depois" "minis minis minis";
+    align-items: center;
+    gap: 18px 14px;
+    margin-inline: 0;
+  }
+  .capas { grid-area: capas; }
+  .capas-trilho { padding-block: 10px 12px; }
+  .capas-controles { display: contents; }
+  .capas-seta[data-seta="-1"] { grid-area: antes; }
+  .capas-seta[data-seta="1"] { grid-area: depois; }
+  .miniaturas { grid-area: minis; justify-content: center; gap: 8px; }
+  .miniaturas li { flex-basis: 48px; width: 48px; }
+  .arquivo { grid-area: arquivo; align-self: start; max-width: 540px; }
+}
+
+/* ---------- 6. um pedido para cada efeito ---------- */
+
+/* a parede: cada quadro é o recorte 3:4 de um reel (como na grade do perfil), com o som do efeito no canto */
+.efeitos-grade {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 28px 12px;
+  margin: 40px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.efeito { min-width: 0; }
+.efeito-quadro {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 14px;
+  background: var(--reel-fundo);
+  box-shadow: 0 0 0 1px var(--linha);
+  cursor: pointer;
+  transition: box-shadow .2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.efeito-quadro:hover { box-shadow: 0 0 0 1.5px rgba(215, 255, 61, .5); }
+.efeito-quadro.tocando { box-shadow: 0 0 0 2px var(--som); }
+.efeito-tela { position: absolute; inset: 0; display: block; }
+.efeito-som {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 9px 5px 6px;
+  border-radius: 99px;
+  background: rgba(11, 33, 28, .86);
+  color: var(--reel-tinta);
+  font: 600 .6875rem/1 var(--mono);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  transition: background-color .15s, color .15s;
+}
+.efeito-som svg { flex: none; width: 13px; height: 13px; }
+/* com o som desligado, o alto-falante fica sem a onda */
+.efeito-onda { opacity: 0; }
+.som-ligado .efeito-onda { opacity: 1; }
+.efeito-quadro.tocando .efeito-som { background: var(--som); color: var(--sobre-lima); }
+.efeito-nome { margin-top: 12px; font-size: 1.0625rem; font-weight: 800; letter-spacing: -.01em; }
+.efeito-pedido { margin-top: 4px; color: var(--texto-suave); font-size: .875rem; line-height: 1.45; }
+@media (min-width: 720px) {
+  .efeitos-grade { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 36px 16px; }
+}
+@media (min-width: 1024px) {
+  .efeitos-grade { gap: 44px 22px; }
+  .efeito-nome { font-size: 1.1875rem; }
+  .efeito-pedido { font-size: .9375rem; }
+}
+
+/* ---------- reels desenhados: as capas do catálogo e a parede de efeitos ----------
+   Um quadro do tamanho do vídeo (1080 de largura), escalado para a caixa (efeitos.js, montaPalco), com as cores
+   e as letras da cena do kit. O carrossel e o manual levam as cores deles (--cor-*), como objetos do mundo. */
+
+.rl-palco {
+  --cor-lamina-papel: #f3eee4;
+  --cor-lamina-tinta: #17150f;
+  --cor-lamina-destaque: #e8512f;
+  --cor-folha-2: #d3d6c8;
+  --cor-folha-3: #9fae9d;
+  position: absolute;
+  left: 0;
+  top: 0;
+  overflow: hidden;
+  transform-origin: 0 0;
+  background-color: var(--reel-fundo);
+  background-image: radial-gradient(rgba(244, 239, 226, .07) 2px, transparent 2.6px);
+  background-size: 36px 36px;
+  color: var(--reel-tinta);
+  font-family: var(--reel-texto);
+  pointer-events: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.rl-palco svg { display: block; overflow: visible; }
+.rl-p { position: absolute; margin: 0; }
+
+/* títulos, legenda, carimbo e o progresso "N DE 3", como os da cena do kit */
+.rl-cab { left: 60px; width: 880px; text-align: center; text-transform: uppercase; }
+.rl-m1 { font-family: var(--reel-manchete); line-height: 1; color: var(--reel-destaque); white-space: nowrap; }
+.rl-cab .rl-m2 { margin-top: 10px; font: 82px/1.1 var(--reel-manchete); white-space: nowrap; }
+.rl-tit { left: 60px; width: 880px; font-family: var(--reel-manchete); line-height: 1; text-align: center; text-transform: uppercase; white-space: nowrap; }
+.rl-quadro .rl-tit { left: 40px; width: 1000px; }
+.rl-leg {
+  left: 60px;
+  top: 1210px;
+  width: 880px;
+  color: var(--reel-tinta);
+  font: 84px/1.08 var(--reel-manchete);
+  letter-spacing: .5px;
+  text-align: center;
+  text-transform: uppercase;
+  text-shadow: 6px 0 var(--reel-sombra), -6px 0 var(--reel-sombra), 0 6px var(--reel-sombra), 0 -6px var(--reel-sombra),
+    4px 4px var(--reel-sombra), -4px 4px var(--reel-sombra), 4px -4px var(--reel-sombra), -4px -4px var(--reel-sombra), 0 12px 0 var(--reel-sombra);
+}
+.rl-leg b { color: var(--reel-destaque); font-weight: inherit; }
+.rl-quadro .rl-leg { left: 40px; width: 1000px; }
+.rl-leg-grande {
+  font-size: 150px;
+  text-shadow: 10px 0 var(--reel-sombra), -10px 0 var(--reel-sombra), 0 10px var(--reel-sombra), 0 -10px var(--reel-sombra),
+    7px 7px var(--reel-sombra), -7px 7px var(--reel-sombra), 7px -7px var(--reel-sombra), -7px -7px var(--reel-sombra), 0 18px 0 var(--reel-sombra);
+}
+.rl-etq {
+  padding: 14px 26px 8px;
+  border-radius: 16px;
+  background: var(--reel-alerta);
+  color: var(--reel-sombra);
+  font: 68px/1 var(--reel-manchete);
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+.rl-etq-grande { padding: 22px 40px 12px; border-radius: 24px; font-size: 112px; }
+.rl-rotulo-grande { left: 40px; width: 1000px; color: var(--reel-destaque); font: 700 48px/1 var(--reel-texto); letter-spacing: .2em; text-align: center; }
+.rl-mec {
+  left: 560px;
+  top: 236px;
+  width: 380px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  font: 700 34px/52px var(--reel-texto);
+  letter-spacing: .08em;
+  white-space: nowrap;
+}
+.rl-mec i { flex: none; width: 36px; height: 36px; border: 6px solid var(--reel-tinta); border-radius: 50%; }
+.rl-mec i:first-of-type { margin-left: 10px; }
+.rl-mec i.on { border-color: var(--reel-destaque); background: var(--reel-destaque); }
+.rl-mec-grande { justify-content: center; gap: 30px; font-size: 84px; line-height: 1; }
+.rl-mec-grande i { width: 124px; height: 124px; border-width: 18px; }
+.rl-mec-grande i:first-of-type { margin-left: 26px; }
+/* a linha fina do pé: anda com a volta da capa, como a barra de um vídeo tocando */
+.rl-andamento { left: 0; bottom: 0; width: 100%; height: 10px; background: var(--reel-tinta); opacity: .5; transform-origin: left; transform: scaleX(0); }
+
+/* o cartão do perfil (Motion, Contador) */
+.rl-cartao { width: 640px; height: 500px; transform-origin: 0 0; }
+.rl-cartao-rotulo { font: 700 34px var(--reel-texto); letter-spacing: 6px; }
+.rl-num { left: 60px; top: 272px; width: 520px; color: var(--reel-fundo); font: 150px/1 var(--reel-manchete); transform-origin: 0 50%; }
+.rl-num.subiu { color: var(--reel-sombra); }
+.rl-barra { left: 60px; top: 430px; width: 520px; height: 12px; border-radius: 6px; background: var(--reel-destaque); transform-origin: left; transform: scaleX(0); }
+
+/* Ideias: a lista que acende */
+.rl-linha {
+  left: 80px;
+  width: 840px;
+  height: 90px;
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  padding: 0 26px;
+  border-radius: 22px;
+  font: 52px/1 var(--reel-manchete);
+}
+.rl-bola { flex: none; display: grid; place-items: center; width: 60px; height: 60px; padding-top: 3px; border-radius: 50%; font: 38px/1 var(--reel-manchete); }
+.rl-txt { padding-top: 5px; white-space: nowrap; }
+.rl-linha.feita { border: 5px solid rgba(244, 239, 226, .5); }
+.rl-linha.feita .rl-bola { background: var(--reel-tinta); color: var(--reel-fundo); }
+.rl-linha.acende { background: var(--reel-destaque); color: var(--reel-sombra); box-shadow: 0 0 0 16px rgba(255, 209, 102, .16); }
+.rl-linha.acende .rl-bola { background: var(--reel-sombra); color: var(--reel-destaque); }
+.rl-linha.apagada { border: 5px dashed rgba(244, 239, 226, .24); color: rgba(244, 239, 226, .34); }
+.rl-linha.apagada .rl-bola { border: 4px solid rgba(244, 239, 226, .3); }
+.rl-linha .rl-etq { right: -30px; top: -38px; font-size: 56px; }
+
+/* Roteiro: as três aberturas */
+.rl-abert {
+  left: 80px;
+  width: 840px;
+  height: 156px;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  padding: 0 24px 0 26px;
+  border: 5px solid rgba(244, 239, 226, .2);
+  border-radius: 26px;
+  background: var(--reel-sombra);
+}
+.rl-letra { flex: none; display: grid; place-items: center; width: 100px; height: 100px; padding-top: 4px; border-radius: 50%; background: var(--reel-tinta); color: var(--reel-sombra); font: 66px/1 var(--reel-manchete); }
+.rl-fala { padding-top: 4px; font: 54px/1.06 var(--reel-manchete); white-space: nowrap; }
+.rl-abert.ativa { border-color: var(--reel-destaque); box-shadow: 0 0 0 14px rgba(255, 209, 102, .12); }
+.rl-abert.ativa .rl-letra { background: var(--reel-destaque); }
+.rl-cursor { display: inline-block; width: 12px; height: 56px; margin-left: 8px; background: var(--reel-destaque); vertical-align: -8px; }
+
+/* Revisor: o painel das 8 notas */
+.rl-painel { left: 80px; top: 600px; width: 840px; height: 548px; display: grid; align-content: space-between; padding: 24px 40px; border-radius: 36px; background: var(--reel-tinta); }
+.rl-nota { position: relative; height: 56px; display: grid; grid-template-columns: 300px 1fr 56px; align-items: center; gap: 24px; }
+.rl-nota > span:first-child { color: var(--reel-fundo); font: 700 26px/1 var(--reel-texto); letter-spacing: .09em; white-space: nowrap; }
+.rl-trilho { position: relative; height: 16px; overflow: hidden; border-radius: 8px; background: rgba(18, 51, 43, .14); }
+.rl-trilho i { position: absolute; left: 0; top: 0; bottom: 0; width: 0; border-radius: 8px; background: var(--reel-fundo); }
+.rl-nota b { padding-top: 4px; color: var(--reel-fundo); font: 54px/1 var(--reel-manchete); text-align: right; }
+.rl-nota-trava.vermelha b { color: var(--reel-alerta); }
+.rl-nota-trava.vermelha .rl-trilho i { background: var(--reel-alerta); }
+.rl-nota .rl-etq { left: 390px; top: -22px; font-size: 58px; }
+
+/* Carrossel: as lâminas do exemplo do kit (1080 x 1350, na metade), passando */
+.rl-laminas { left: 36px; top: 604px; width: 2400px; height: 675px; }
+.rl-lamina {
+  top: 0;
+  width: 1080px;
+  height: 1350px;
+  overflow: hidden;
+  border-radius: 24px;
+  background: var(--cor-lamina-papel);
+  color: var(--cor-lamina-tinta);
+  font-family: var(--fonte);
+  transform: scale(.5);
+  transform-origin: 0 0;
+  box-shadow: 0 60px 120px -40px rgba(0, 0, 0, .55);
+}
+.rl-lam-jogo { background: var(--cor-lamina-tinta); color: var(--cor-lamina-papel); }
+.rl-miolo { left: 128px; right: 128px; top: 128px; bottom: 240px; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; }
+.rl-lam-ideia .rl-miolo { justify-content: flex-start; }
+.rl-selo { flex: none; width: 128px; height: 18px; background: var(--cor-lamina-destaque); }
+.rl-lam-num { flex: none; display: grid; place-items: center; width: 160px; height: 160px; background: var(--cor-lamina-destaque); color: var(--cor-lamina-tinta); font: 800 108px/1 var(--fonte); }
+.rl-lam-tit { margin-top: 60px; font: 800 150px/1.06 var(--fonte); letter-spacing: -.035em; text-wrap: balance; }
+.rl-lam-jogo .rl-lam-tit, .rl-lam-ideia .rl-lam-tit { font-size: 100px; line-height: 1.08; }
+.rl-lam-ideia .rl-lam-tit { margin-top: 80px; }
+.rl-lam-txt { margin-top: 56px; font: 500 54px/1.3 var(--fonte); }
+.rl-lamina mark { margin: 0 -.06em; padding: 0 .06em; background: var(--cor-lamina-destaque); color: var(--cor-lamina-tinta); -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.rl-lam-pe { left: 128px; right: 128px; bottom: 128px; height: 40px; display: flex; align-items: center; gap: 32px; font: 600 32px/1 var(--fonte); }
+.rl-lam-barra { flex: 1; display: flex; gap: 8px; }
+.rl-lam-barra i { flex: 1; height: 6px; border-radius: 3px; background: currentColor; opacity: .18; }
+.rl-lam-barra i.rl-lam-feito { opacity: 1; }
+.rl-pontos { left: 60px; top: 1312px; width: 880px; display: flex; justify-content: center; gap: 18px; }
+.rl-pontos i { width: 22px; height: 22px; border-radius: 50%; background: rgba(244, 239, 226, .3); }
+.rl-pontos i.on { background: var(--reel-destaque); }
+.rl-pontos i.meio { background: rgba(255, 209, 102, .6); }
+
+/* Postar: o post, a legenda e as hashtags */
+.rl-post { left: 80px; top: 600px; width: 840px; height: 340px; padding: 150px 40px 0; border-radius: 32px; background: var(--reel-tinta); color: var(--reel-fundo); }
+.rl-av { left: 40px; top: 40px; width: 84px; height: 84px; border-radius: 50%; background: var(--reel-fundo); }
+.rl-nome1 { left: 148px; top: 52px; width: 270px; height: 26px; border-radius: 13px; background: var(--reel-fundo); }
+.rl-nome2 { left: 148px; top: 94px; width: 170px; height: 20px; border-radius: 10px; background: var(--reel-fundo); opacity: .45; }
+.rl-post p { font: 700 40px/1.3 var(--reel-texto); letter-spacing: -.005em; }
+.rl-mais { font-weight: 500; opacity: .45; }
+.rl-tags { left: 80px; width: 840px; display: flex; gap: 18px; }
+.rl-tags span { display: inline-block; padding: 16px 26px 14px; border-radius: 99px; background: var(--reel-destaque); color: var(--reel-sombra); font: 700 40px/1 var(--reel-texto); letter-spacing: -.01em; }
+
+/* Manual: a página do módulo 1 sobre as outras */
+.rl-folha { left: 270px; top: 586px; width: 460px; height: 600px; border-radius: 14px; background: var(--reel-tinta); }
+.rl-folha.f3 { background: var(--cor-folha-3); }
+.rl-folha.f2 { background: var(--cor-folha-2); }
+.rl-folha.f1 { overflow: hidden; box-shadow: 0 26px 50px -18px rgba(0, 0, 0, .6); }
+.rl-faixa { left: 0; right: 0; top: 0; height: 150px; display: flex; align-items: center; gap: 24px; padding: 0 34px; background: var(--reel-fundo); }
+.rl-faixa b { padding-top: 10px; color: var(--reel-destaque); font: 112px/1 var(--reel-manchete); }
+.rl-faixa span { padding-top: 6px; color: var(--reel-tinta); font: 44px/1.02 var(--reel-manchete); }
+.rl-pronto { left: 0; right: 0; top: 150px; height: 44px; padding-left: 34px; background: var(--reel-alerta); color: var(--reel-sombra); font: 700 20px/44px var(--reel-texto); letter-spacing: .14em; }
+.rl-ln { left: 34px; height: 12px; border-radius: 6px; background: rgba(18, 51, 43, .22); }
+.rl-placar { left: 26px; right: 26px; top: 324px; display: grid; gap: 10px; }
+.rl-placar div { height: 76px; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 6px 20px 0; border: 4px solid var(--reel-fundo); border-radius: 12px; }
+.rl-placar b { color: var(--reel-fundo); font: 46px/1 var(--reel-manchete); white-space: nowrap; }
+.rl-placar span { padding-bottom: 4px; color: var(--reel-fundo); font: 700 20px/1 var(--reel-texto); letter-spacing: .1em; opacity: .75; white-space: nowrap; }
+.rl-placar .vence { border-color: var(--reel-alerta); background: var(--reel-alerta); }
+.rl-placar .vence b, .rl-placar .vence span { color: var(--reel-sombra); opacity: 1; }
+.rl-fita { right: 44px; top: -4px; width: 42px; height: 124px; background: var(--reel-alerta); clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%); }
+
+/* a parede: os objetos de cada efeito, grandes, no recorte 3:4 */
+.rl-vazio { fill: none; stroke: var(--reel-tinta); stroke-width: 8; stroke-dasharray: 16 14; opacity: .7; }
+.rl-num-erro { transform-origin: 50% 56%; }
+.rl-trilho-grande { width: 840px; height: 110px; overflow: hidden; border: 14px solid var(--reel-tinta); border-radius: 55px; }
+.rl-trilho-grande i { position: absolute; inset: 0; background: var(--reel-destaque); transform: scaleX(0); transform-origin: left; }
+.rl-raios-grandes { transform-origin: 540px 700px; }
+
+/* ---------- espaços de vídeo ---------- */
+
+[data-video]:empty { display: none; }
+
+/* ---------- 7. feitos com os arquivos ---------- */
+
+/* no celular a faixa vai de ponta a ponta da tela, e o vídeo seguinte aparece na borda */
+.feitos-trilho {
+  display: flex;
+  gap: 14px;
+  margin: 36px calc(-1 * var(--margem)) 0;
+  padding: 0 var(--margem) 6px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--margem);
+  scrollbar-width: none;
+}
+.feitos-trilho::-webkit-scrollbar { display: none; }
+.feito { flex: none; width: 200px; margin: 0; scroll-snap-align: start; }
+.feito video { width: 100%; aspect-ratio: 9 / 16; object-fit: cover; border-radius: var(--raio); background: var(--painel); }
+.feito figcaption { margin-top: 10px; color: var(--apagado); font-size: .8125rem; line-height: 1.45; }
+@media (min-width: 960px) {
+  /* no computador o título fica à esquerda e a faixa à direita, como na tabela: poucos vídeos não deixam a tela vazia */
+  .feitos .conteudo { display: grid; grid-template-columns: minmax(0, .75fr) minmax(0, 1.25fr); align-items: center; gap: 56px; }
+  .feitos-trilho { margin: 0; padding-inline: 0; scroll-padding-inline: 0; }
+  .feito { width: 210px; }
+}
+
+/* ---------- 8. prova ---------- */
+
+.prova-grade { display: grid; grid-template-columns: minmax(0, 1fr); gap: 40px; }
+.prova-texto .sub { max-width: 36ch; }
+/* "20 mil" nunca quebra no meio */
+.junto { white-space: nowrap; }
+.numeros { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--linha); }
+.numeros li {
+  display: grid;
+  gap: 8px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--linha);
+  color: var(--texto-suave);
+}
+.numeros b {
+  justify-self: start;
+  color: var(--lima);
+  font: 800 2.25rem/1 var(--fonte);
+  letter-spacing: -.03em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  transform-origin: 0 70%;       /* a mola do número cresce da esquerda, sem passar da margem */
+}
+@media (min-width: 640px) {
+  /* do tablet para cima, o número à esquerda e a frase ao lado */
+  .numeros li { grid-template-columns: 10rem 1fr; align-items: baseline; gap: 20px; }
+}
+.prova-video { justify-self: center; width: min(100%, 300px); aspect-ratio: 9 / 16; overflow: hidden; border-radius: var(--raio); background: var(--painel); }
+.prova-video video { width: 100%; height: 100%; object-fit: cover; }
+@media (min-width: 960px) {
+  /* sem vídeo: o título de um lado e os números do outro; com vídeo, ele ganha a coluna da direita */
+  .prova-grade { grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); column-gap: 72px; align-items: center; }
+  .prova h2 { font-size: clamp(2.25rem, .9rem + 2.5vw, 3.25rem); }
+  .prova-grade:has(> .com-video) {
+    grid-template-columns: minmax(0, 1fr) 300px;
+    grid-template-areas: "texto video" "numeros video";
+    row-gap: 40px;
+  }
+  .prova-grade:has(> .com-video) .prova-texto { grid-area: texto; align-self: end; }
+  .prova-grade:has(> .com-video) .numeros { grid-area: numeros; align-self: start; max-width: 760px; }
+  .prova-grade:has(> .com-video) .prova-video { grid-area: video; }
+  .numeros b { font-size: 2.5rem; }
+}
+
+/* ---------- 9. tabela: separado × pacote ---------- */
+
+/* a tabela é a fila de exportação do editor: um arquivo por linha, o pacote selecionado em lima */
+.fila {
+  margin-top: 40px;
+  overflow: hidden;
+  border: 1px solid var(--linha);
+  border-radius: var(--raio);
+  background: var(--painel);
+}
+.fila-linhas { list-style: none; margin: 0; padding: 0; }
+.fila-linha {
+  position: relative;
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr) auto;
+  grid-template-areas: "n nome preco";
+  align-items: center;
+  gap: 10px 12px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--linha);
+}
+.fila-n { grid-area: n; color: var(--apagado); font: 600 .75rem/1 var(--mono); }
+/* a fila exporta: um traço lima corre cada linha, em ordem; depois a soma separada é riscada (venda.js) */
+.fila.anima .fila-linha::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: var(--lima);
+  opacity: calc(1 - var(--some, 0));
+  transform: scaleX(var(--varre, 0));
+  transform-origin: left;
+  pointer-events: none;
+}
+.fila-linha.varrendo .fila-n { color: var(--lima); }
+.fila.anima .fila-total s { position: relative; text-decoration: none; }
+.fila.anima .fila-total s::after {
+  content: '';
+  position: absolute;
+  left: -3px;
+  right: -3px;
+  top: 50%;
+  height: 2px;
+  margin-top: -1px;
+  border-radius: 1px;
+  background: var(--rec);
+  transform: scaleX(var(--risco, 0));
+  transform-origin: left;
+}
+.fila-nome { grid-area: nome; font-weight: 600; line-height: 1.3; }
+.fila-preco { grid-area: preco; font: 600 .9375rem/1 var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.fila-linha .botao-mini { display: none; grid-area: botao; justify-self: start; }
+
+.fila-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  padding: 18px;
+  border-bottom: 1px solid var(--linha);
+  color: var(--apagado);
+}
+.fila-total s {
+  color: var(--apagado);
+  font: 600 1rem/1 var(--mono);
+  font-variant-numeric: tabular-nums;
+  text-decoration-color: var(--rec);
+  text-decoration-thickness: 2px;
+}
+.fila-pacote {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 6px 16px;
+  padding: 20px 18px;
+  background: var(--lima);
+  color: var(--sobre-lima);
+}
+.fila-pacote-nome { font-weight: 800; font-size: 1.125rem; line-height: 1.2; }
+.fila-pacote b { font: 900 2rem/1 var(--fonte); letter-spacing: -.035em; font-variant-numeric: tabular-nums; white-space: nowrap; transform-origin: 100% 60%; }
+.fila-desconto { grid-column: 1 / -1; font: 700 .6875rem/1.2 var(--mono); letter-spacing: .1em; text-transform: uppercase; }
+
+.tabela .botao { width: 100%; margin-top: 28px; }
+.miuda { margin-top: 14px; color: var(--apagado); font-size: .875rem; }
+.miuda-link { color: var(--texto-suave); text-decoration: underline; text-decoration-color: var(--linha-forte); text-underline-offset: 3px; }
+.miuda-link:hover { color: var(--lima); text-decoration-color: currentColor; }
+
+@media (min-width: 720px) {
+  .fila-linha {
+    grid-template-columns: 2.5rem minmax(0, 1fr) auto auto;
+    grid-template-areas: "n nome preco botao";
+    align-items: center;
+    gap: 16px;
+    padding: 14px 18px;
+  }
+  .fila-linha .botao-mini { display: inline-flex; justify-self: end; }
+  .fila-preco { min-width: 5.5rem; text-align: right; }
+  .fila-pacote { padding: 24px 18px; }
+  .fila-pacote b { font-size: 2.5rem; }
+  .tabela .botao { width: auto; }
+}
+@media (min-width: 1024px) {
+  /* no computador o título fica à esquerda e a fila à direita */
+  .tabela .conteudo { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 0 72px; align-items: start; }
+  .tabela h2 { grid-column: 1; grid-row: 1 / span 2; position: sticky; top: 120px; align-self: start; font-size: clamp(2.5rem, 1.2rem + 2vw, 3rem); }
+  .tabela .fila, .tabela .acoes { grid-column: 2; }
+  .tabela .fila { margin-top: 0; }
+}
+
+/* ---------- 10. o que você recebe · 11. para quem é ---------- */
+
+.lista-linhas { list-style: none; margin: 40px 0 0; padding: 0; border-top: 1px solid var(--linha); max-width: 760px; }
+.lista-linhas li {
+  position: relative;
+  padding: 18px 0 18px 34px;
+  border-bottom: 1px solid var(--linha);
+  color: var(--texto-suave);
+}
+/* o visto, desenhado; --visto o faz bater com mola quando a lista aparece (venda.js) */
+.lista-linhas li::before {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 1.45em;
+  width: 12px;
+  height: 7px;
+  border-left: 2px solid var(--lima);
+  border-bottom: 2px solid var(--lima);
+  transform: translateY(-60%) rotate(-45deg) scale(var(--visto, 1));
+}
+
+.recebe .miuda { margin-top: 18px; }
+
+/* quatro linhas finas; o ícone de cada uma mostra a rotina quando a lista aparece (venda.js) */
+.rotinas { list-style: none; margin: 40px 0 0; padding: 0; display: grid; gap: 0; border-top: 1px solid var(--linha); }
+.rotina {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  align-content: start;
+  column-gap: 16px;
+  row-gap: 4px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--linha);
+  color: var(--texto-suave);
+}
+.rotina-icone { grid-row: 1 / span 2; }
+.rotina b { display: block; color: var(--texto); font-size: 1.1875rem; font-weight: 800; line-height: 1.25; letter-spacing: -.015em; }
+.rotina-icone { width: 44px; height: 44px; overflow: visible; fill: none; stroke: var(--lima); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.rotina-icone .rotina-cheio { fill: var(--lima); stroke: none; }
+.rotina-icone .cheia { fill: var(--lima); }
+.rotina-ponteiro { transform-box: view-box; transform-origin: 24px 27px; }
+.rotina-legenda { stroke-dasharray: 1; }
+.rotina-icone [data-pontinho] { transform-box: fill-box; transform-origin: center; }
+@media (min-width: 640px) {
+  .rotinas { grid-template-columns: 1fr 1fr; column-gap: 48px; }
+}
+
+/* ---------- 12. preço ---------- */
+
+.preco-painel {
+  display: grid;
+  gap: 22px;
+  max-width: 680px;
+  margin-top: 40px;
+  padding: 24px 20px 26px;
+  border: 1px solid var(--linha);
+  border-radius: 20px;
+  background: var(--painel);
+}
+.preco-lado { display: grid; gap: 22px; align-content: start; }
+
+/* o contador é o relógio do monitor: dias, horas, minutos e segundos */
+.contador { display: grid; gap: 12px; }
+.contador-digitos {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  padding: 14px 10px 12px;
+  border: 1px solid var(--linha);
+  border-radius: 12px;
+  background: var(--fundo);
+}
+.contador-digitos > span { position: relative; display: grid; justify-items: center; gap: 8px; }
+.contador-digitos > span + span::before {
+  content: ':';
+  position: absolute;
+  left: -6px;
+  top: 0;
+  transform: translateX(-50%);
+  color: var(--linha-forte);
+  font: 600 clamp(1.75rem, 1.1rem + 2.6vw, 2.75rem)/1 var(--mono);
+}
+.contador-digitos b {
+  color: var(--texto);
+  font: 600 clamp(1.75rem, 1.1rem + 2.6vw, 2.75rem)/1 var(--mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -.02em;
+}
+
+.preco-valor { display: grid; gap: 4px; color: var(--texto-suave); }
+.preco-valor b {
+  color: var(--lima);
+  font: 900 clamp(3.5rem, 2.2rem + 5.4vw, 5.75rem)/.92 var(--fonte);
+  letter-spacing: -.04em;
+  font-variant-numeric: tabular-nums;
+}
+.preco-depois { color: var(--texto); font-weight: 600; }
+.preco-depois [data-preco-cheio] { white-space: nowrap; }
+.preco-acao { padding-top: 22px; border-top: 1px solid var(--linha); }
+.preco-condicoes { display: grid; gap: 6px; color: var(--texto-suave); font-size: 1rem; }
+/* os 7 dias da garantia: acendem em fila quando o painel aparece, e o visto fecha (venda.js) */
+.garantia { display: flex; align-items: center; gap: 5px; margin-bottom: 8px; }
+.garantia i {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--linha-forte);
+  border-radius: 7px;
+  color: var(--apagado);
+  font: 600 .6875rem/1 var(--mono);
+  font-style: normal;
+}
+.garantia i.aceso { border-color: rgba(215, 255, 61, .7); background: rgba(215, 255, 61, .12); color: var(--lima); }
+.garantia-selo { flex: none; width: 24px; height: 24px; margin-left: 6px; color: var(--lima); }
+.preco-painel .botao { width: 100%; }
+@media (min-width: 640px) {
+  .preco-painel { padding: 36px 36px 38px; }
+}
+@media (min-width: 1024px) {
+  /* no computador: o valor de um lado, a garantia e o botão do outro, como um painel de exportação */
+  .preco-painel { max-width: none; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: 0; padding: 40px 0; }
+  .preco-lado { padding-inline: 40px; }
+  .preco-acao { align-content: end; padding-top: 0; border-top: 0; border-left: 1px solid var(--linha); }
+  .preco-acao .botao { margin-top: 10px; }
+}
+
+/* ---------- 13. dúvidas ---------- */
+
+.duvidas-grade { display: grid; margin-top: 40px; }
+.duvidas-coluna { border-top: 1px solid var(--linha); }
+.duvidas-coluna + .duvidas-coluna { border-top: 0; }
+.duvidas details { border-bottom: 1px solid var(--linha); }
+.duvidas summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px 0;
+  font-weight: 700;
+  font-size: 1.0625rem;
+  line-height: 1.35;
+  list-style: none;
+  cursor: pointer;
+  transition: color .2s;
+}
+.duvidas summary::-webkit-details-marker { display: none; }
+/* o mais, desenhado; aberto, vira um x */
+.duvidas summary::after {
+  content: '';
+  flex: none;
+  width: 14px;
+  height: 14px;
+  background:
+    linear-gradient(var(--lima), var(--lima)) center / 100% 2px no-repeat,
+    linear-gradient(var(--lima), var(--lima)) center / 2px 100% no-repeat;
+  transition: transform .35s var(--curva);
+}
+.duvidas details[open] summary::after { transform: rotate(45deg); }
+.duvidas summary:hover { color: var(--lima); }
+.duvidas details p { max-width: 60ch; padding-bottom: 22px; color: var(--texto-suave); }
+@media (min-width: 900px) {
+  .duvidas-grade { grid-template-columns: 1fr 1fr; column-gap: 56px; }
+  .duvidas-coluna + .duvidas-coluna { border-top: 1px solid var(--linha); }
+}
+
+/* ---------- 14. fecho ---------- */
+
+/* a manchete, o celular com o fim da cena de exemplo e o botão; no computador, o celular à direita */
+.fecho-grade { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: "titulo" "vitrine" "acao"; gap: 40px; }
+.fecho h2 { grid-area: titulo; font-size: clamp(2.5rem, 1.5rem + 4.4vw, 4.5rem); line-height: .98; letter-spacing: -.035em; }
+.fecho-vitrine { grid-area: vitrine; display: grid; justify-items: center; }
+.fecho .fone { width: min(50vw, 196px); }
+.fecho-acao { position: relative; z-index: 1; grid-area: acao; }
+.chave-som-fecho { margin-top: 18px; }
+.fecho .botao { width: 100%; }
+@media (min-width: 560px) {
+  .fecho .botao { width: auto; }
+}
+@media (min-width: 960px) {
+  .fecho-grade {
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, .75fr);
+    grid-template-areas: "titulo vitrine" "acao vitrine";
+    column-gap: 72px;
+    row-gap: 36px;
+  }
+  .fecho h2 { align-self: end; }
+  .fecho-acao { align-self: start; }
+  .fecho .fone { width: 236px; }
+}
+
+/* ---------- rodapé ---------- */
+
+.rodape {
+  padding-block: 44px 56px;
+  border-top: 1px solid var(--linha);
+  color: var(--apagado);
+  font-size: .8125rem;
+  line-height: 1.6;
+}
+.rodape .conteudo > * + * { margin-top: 10px; }
+.rodape p { max-width: 72ch; }
+.rodape .marca { color: var(--texto); margin-bottom: 18px; }
+
+/* ---------- botão fixo do celular ---------- */
+
+.botao-fixo {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 20;
+  padding: 10px var(--margem) calc(10px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--linha);
+  background: rgba(10, 10, 11, .96);
+  transform: translateY(105%);
+  visibility: hidden;
+  transition: transform .3s var(--curva), visibility 0s linear .3s;
+}
+.botao-fixo.ativo { transform: none; visibility: visible; transition: transform .45s var(--curva), visibility 0s; }
+.botao-fixo .botao { width: 100%; min-height: 52px; padding-block: 13px; }
+@media (max-width: 860px) {
+  /* o botão fixo não cobre o fim do rodapé */
+  .rodape { padding-bottom: calc(56px + 76px + env(safe-area-inset-bottom)); }
+}
+@media (min-width: 861px) {
+  .botao-fixo { display: none; }
+}
+
+/* ---------- menos movimento ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}

@@ -551,6 +551,8 @@ function ajusta() {
   camadaLeg.style.fontSize = AJUSTES.legenda.tamanho + 'px';
 }
 addEventListener('resize', ajusta);
+// dentro do site, o iframe pode nascer no tamanho padrão (300x150) e só crescer quando o CSS chega, sem 'resize'
+if (typeof ResizeObserver === 'function') new ResizeObserver(() => ajusta()).observe(document.documentElement);
 
 /* ---------- zona segura ---------- */
 (function montaGuia() {
