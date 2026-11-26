@@ -78,7 +78,7 @@ export const AJUSTES = {
         'O vídeo de 5 milhões, frase por frase.',
         'Um caminho sem instalar nada.',
       ],
-      roda: 'PDF', preco: 67, ativo: false,
+      roda: 'PDF', preco: 67, ativo: true,
     },
   ],
 
