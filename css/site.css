@@ -272,6 +272,16 @@ li { text-wrap: pretty; }
   letter-spacing: -.005em;
   white-space: nowrap;
 }
+/* o nome do método na frente; o nome do produto ao lado, mais baixo (some em tela estreita) */
+.marca-sub {
+  padding-left: 10px;
+  border-left: 1px solid var(--linha-forte);
+  color: var(--apagado);
+  font: 600 .6875rem/1 var(--mono);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+@media (max-width: 479px) { .topo .marca-sub { display: none; } }
 
 /* chave de som, como o botão de mudo de uma faixa */
 .chave-som {
